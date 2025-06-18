@@ -1,0 +1,31 @@
+Jours de développement:
+
+Jour 1: Initialisation du projet & rédaction du cahier de charge
+Jour 2: Structuration de la base de données
+Jour 3: 
+
+
+Commandes utilisées lors du développement:
+
+- laravel new backend_laravel
+- npm create vue@latest
+- cd frontend_vuejs
+- npm install
+- npm run format
+- git init
+- git add .
+- git commit -m "Initial commit for the project"
+- git add remote https://github.com/Daiki67/bigscreen-survey.git
+- git push -u origin master
+- 
+
+
+Resources utilisées lors du développement:
+
+§Backend
+ - https://laravel.com/docs/12.x
+ - 
+
+§Frontend
+ - https://vuejs.org/guide/quick-start.html
+ - 
