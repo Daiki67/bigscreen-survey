@@ -17,15 +17,34 @@ Commandes utilisées lors du développement:
 - git commit -m "Initial commit for the project"
 - git add remote https://github.com/Daiki67/bigscreen-survey.git
 - git push -u origin master
-- 
+- composer require laravel/sanctum
+- php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+- php artisan install:api
+- php artisan config:publish cors
+- php artisan make:controller AuthController
+- php artisan make:resource UserResource
+- php artisan make:resource User --collection
+- php artisan make:resource UserCollection
+- php artisan make:controller UserController
+- php artisan make:controller CheckUserController
+- php artisan make:controller CheckAdminController
 
 
 Resources utilisées lors du développement:
 
 §Backend
  - https://laravel.com/docs/12.x
+ - https://laravel.com/docs/12.x/sanctum#main-content
+ - https://laravel.com/docs/12.x/eloquent
+ - https://laravel.com/docs/12.x/routing#route-group-controllers
+ - https://laravel.com/docs/12.x/controllers
  - 
 
 §Frontend
  - https://vuejs.org/guide/quick-start.html
  - 
+
+
+Journal des erreurs:
+
+ -
