@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Resources\UserResource;
 
+use function PHPUnit\Framework\isEmpty;
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -29,12 +31,18 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => new UserResource($user),
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 201);
+        if ($user && $token) {
+            return response()->json([
+                'message' => 'User registered successfully',
+                'user' => new UserResource($user),
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'User registration failed'
+            ], 500);
+        }
     }
 
     public function login(Request $request)
@@ -45,26 +53,40 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['Invalid credentials.'],
-            ]);
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
         $user = $request->user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Logged in successfully',
-            'user' => new UserResource($user),
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ]);
+        if ($user && $token) {
+            return response()->json([
+                'message' => 'User logged in successfully',
+                'user' => new UserResource($user),
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'User login failed'
+            ], 500);
+        }
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        if ($request->user()) {
+            return response()->json([
+                'message' => 'User logged out successfully',
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'User logout failed'
+            ], 500);
+        }
     }
 }
