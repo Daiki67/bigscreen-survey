@@ -28,7 +28,16 @@ Commandes utilisées lors du développement:
 - php artisan make:controller UserController
 - php artisan make:controller CheckUserController
 - php artisan make:controller CheckAdminController
-
+- php artisan make:model Question -a
+- php artisan make:model Submission -a
+- php artisan make:model Answer -a
+- php artisan make:resource QuestionResource
+- php artisan make:resource AnswerResource
+- php artisan make:resource SubmissionResource
+- php artisan make:resource PieChartDataResource
+- php artisan make:resource RadarChartDataResource
+- php artisan db:seed
+- php artisan db:seed --class=AnswerSeeder
 
 Resources utilisées lors du développement:
 
