@@ -28,4 +28,29 @@ class SurveyController extends Controller
         return QuestionResource::collection($questions);
     }
 
+    /**
+     * Affiche les réponses d'un utilisateur via son jeton unique.
+     *
+     * @param  string  $token
+     * @return \App\Http\Resources\SubmissionResource|\Illuminate\Http\JsonResponse
+     */
+    public function showResults(string $token)
+    {
+        // Récupère la soumission via le token, ou renvoie une erreur 404 si non trouvée
+        $submission = Submission::where('url_token', $token)->first();
+
+        if (!$submission) {
+            return response()->json(['message' => 'Sondage non trouvé.'], 404);
+        }
+
+        // On charge les réponses et les questions associées pour optimiser les requêtes
+        // 'answers.question' permet de charger les questions liées à chaque réponse
+        $submission->load('answers.question');
+
+        // Retourne la ressource de soumission complète
+        return response()->json([
+            'message' => 'Résultats du sondage récupérés avec succès.',
+            'submission' => new SubmissionResource($submission),
+        ]);
+    }
 }
