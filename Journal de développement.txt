@@ -1,8 +1,10 @@
 Jours de développement:
 
-Jour 1: Initialisation du projet & rédaction du cahier de charge
-Jour 2: Structuration de la base de données
-Jour 3: 
+Jour 1: Initialisation du projet & rédaction du cahier de charge (5h)
+Jour 2: Structuration de la base de données (5h)
+Jour 3: Création des seeders & des factories (5h)
+Jour 4: Création du controller SurveyController pour l'enregistrement des réponses sous une url_token, voir les questions et voir les réponses liées à une url (9h)
+Jour 5: 
 
 
 Commandes utilisées lors du développement:
@@ -56,4 +58,9 @@ Resources utilisées lors du développement:
 
 Journal des erreurs:
 
- -
+ - BadMethodCallException
+Method Illuminate\Validation\Validator::validateRequire does not exist.
+
+R: Revoir l'état de validation du formulaire.
+
+- 
