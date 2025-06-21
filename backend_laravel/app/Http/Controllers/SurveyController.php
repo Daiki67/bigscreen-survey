@@ -29,6 +29,70 @@ class SurveyController extends Controller
     }
 
     /**
+     * Valide et enregistre les réponses du sondage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        $rules = [];
+        //Recupération de toutes les questions
+        $questions = Question::all();
+
+        // Vérification que l'utilisateur a répondu à toutes les questions
+        /* if (!$questions) {
+            return response()->json([
+                'message' => 'Aucune question trouvée.',
+            ], 404);
+        }
+        else {
+            return response()->json([
+                'message' => 'Questions trouvées avec succès.',
+            ]);
+        } */
+
+        foreach ($questions as $question) {
+            $rule = 'required';
+            if($question->id === 1) {
+                $rule = '|email';
+            }
+            $rules['answer.' .$question->id] = $rule;
+        }
+
+        try {
+            $validateData = $request->validate($rules);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation échouée.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
+
+        // Création d'une nouvelle soumission
+        $submission = Submission::create([
+            'url_token' => Str::uuid(), // Génération d'un jeton unique
+        ]);
+
+        // Création d'une nouvelle réponse pour chaque question
+        $answers = [];
+        foreach($questions as $question){
+            $answers[] = Answer::create([
+                'submission_id' => $submission->id,
+                'question_id' => $question->id,
+                'value' => $validateData['answer'][$question->id], // Récupération de la réponse de l'utilisateur
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Réponses validées avec succès.',
+            'url-token' => $submission->url_token,
+            'data' => $answers,
+        ],201);
+
+    }
+
+    /**
      * Affiche les réponses d'un utilisateur via son jeton unique.
      *
      * @param  string  $token
