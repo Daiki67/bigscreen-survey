@@ -20,37 +20,47 @@ class DashboardController extends Controller
     {
 
         try {
-        
-            return response()->json([
-                'PieChartData' => [
-                    'question_6' => $this->getChartDataForQuestion(6),
-                    'question_7' => $this->getChartDataForQuestion(7), 
-                    'question_10' => $this->getChartDataForQuestion(10), 
-                ],
-                'RadarChartData' => [
-                    'question_11' => $this->getChartDataForQuestion(11),
-                    'question_12' => $this->getChartDataForQuestion(12),
-                    'question_13' => $this->getChartDataForQuestion(13),
-                    'question_14' => $this->getChartDataForQuestion(14),
-                    'question_15' => $this->getChartDataForQuestion(15),
-                ],
 
+            return response()->json([
+                
+                'PieChartData' => [
+                    'question_6' => $this->getPieChartDataForQuestion(6),
+                    'question_7' => $this->getPieChartDataForQuestion(7),
+                    'question_10' => $this->getPieChartDataForQuestion(10),
+                ],
+                
+                'RadarChartData' => $this->getRadarQualityAnswersByQuestionId(),
+                
+                'message' => 'Statistiques du tableau de bord récupérées avec succès.',
             ]);
-            } catch (\Exception $e) {
+        } catch (\Exception $e) {
+
             return response()->json(['error' => 'Erreur lors de la récupération des données'], 500);
-        }    
+
+        }
 
 
     }
 
-    
-    private function getChartDataForQuestion(int $questionId)
+
+    private function getPieChartDataForQuestion(int $questionId)
     {
         return Answer::where('question_id', $questionId)
             ->whereNotNull('submission_id')
             ->select('value', DB::raw('count(*) as count'))
             ->groupBy('value')
             ->pluck('count', 'value');
+    }
+
+    private function getRadarQualityAnswersByQuestionId()
+    {
+        // Récupère les réponses pour une question spécifique
+        return Answer::whereIn('question_id', [11, 12, 13, 14, 15])
+            ->whereNotNull('submission_id')
+            ->select('value', DB::raw('count(*) as count'))
+            ->groupBy('value')
+            ->orderBy('value')
+            ->get();
     }
 
 }
