@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
         Route::get('/result/{token}', 'showResults');
     });
 
-    Route::controller(DashboardController::class)->prefix('questions')->group(function () {
+    Route::controller(DashboardController::class)->prefix('dashboard')->group(function () {
         Route::get('/submission', 'index');
         Route::get('/submission/{id}', 'show');
         Route::post('/submission', 'store');
