@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Submission;
 use App\Http\Resources\SubmissionResource; // N'oubliez pas d'importer votre ressource
 use Illuminate\Http\JsonResponse;
+use App\Models\Answer; // Assurez-vous d'importer le modèle Answer
+use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
 {
@@ -14,30 +16,36 @@ class AnswerController extends Controller
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(): JsonResponse
     {
-        // On utilise la pagination pour la performance
-        // On charge les relations 'answers' et 'answers.question' pour éviter le problème N+1
-        $submissions = Submission::with('answers.question')
-            ->latest() // Les plus récentes d'abord
-            ->paginate(10);
-
-        // Retourne une collection de SubmissionResource avec pagination
-        return SubmissionResource::collection($submissions);
+        try {
+            for ($i = 1; $i <= 20; $i++) {
+                $answers[$i] = $this->getAnswersByQuestionId($i);
+            }
+            // Retourne les soumissions paginées
+            return response()->json([
+                'DataAnswersQuestion' => $answers,
+                'message' => 'Liste des soumissions récupérée avec succès.',
+            ]);
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourne une réponse JSON avec le message d'erreur
+            return response()->json([
+                'error' => 'Erreur lors de la récupération des soumissions : ' . $e->getMessage(),
+            ], 500);
+        }
     }
+    
 
-    /**
-     * Affiche une soumission spécifique et ses réponses.
-     *
-     * @param  \App\Models\Submission  $submission
-     * @return \App\Http\Resources\SubmissionResource|\Illuminate\Http\JsonResponse
-     */
-    public function show(Submission $submission): SubmissionResource|JsonResponse
+    private function getAnswersByQuestionId(int $questionId)
     {
-        // Charge les relations 'answers' et 'answers.question' pour la soumission spécifique
-        $submission->load('answers.question');
-
-        // Retourne la ressource de soumission complète
-        return new SubmissionResource($submission);
+        // Récupère les réponses pour une question spécifique
+        return Answer::where('question_id', $questionId)
+            ->whereNotNull('submission_id')
+            ->select('value', DB::raw('COUNT(*) as count'))
+            ->groupBy('value')
+            ->get()
+            ->map(function ($answer) {
+                return $answer->value . ' (' . $answer->count . ')';
+            });
     }
 }
