@@ -17,24 +17,15 @@ Route::controller(SurveyController::class)->prefix('survey')->group(function () 
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     Route::controller(SurveyController::class)->prefix('survey')->group(function () {
-        Route::get('/question', 'index');
-        Route::get('/result/{token}', 'showResults');
+        Route::get('/questions', 'index');
     });
 
     Route::controller(DashboardController::class)->prefix('dashboard')->group(function () {
-        Route::get('/submission', 'index');
-        Route::get('/submission/{id}', 'show');
-        Route::post('/submission', 'store');
-        Route::put('/submission/{id}', 'update');
-        Route::delete('/submission/{id}', 'destroy');
+        Route::get('/datacharts', 'index');
     });
 
-    Route::controller(AnswerController::class)->prefix('questions')->group(function () {
-        Route::get('/answer', 'index');
-        Route::get('/answer/{id}', 'show');
-        Route::post('/answer', 'store');
-        Route::put('/answer/{id}', 'update');
-        Route::delete('/answer/{id}', 'destroy');
+    Route::controller(AnswerController::class)->prefix('answers')->group(function () {
+        Route::get('/all', 'index');
     });
 
 });
