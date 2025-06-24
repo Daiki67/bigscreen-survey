@@ -20,7 +20,6 @@ class Question extends Model
         'title',
         'type',
         'options',
-        'order',
     ];
 
     protected $casts = [
@@ -31,8 +30,8 @@ class Question extends Model
      *
      * @var list<string>
      */
-    public function answers()  { 
-        return $this->hasMany(Answer::class); 
+    public function answers()  {
+        return $this->hasMany(Answer::class);
     }
 
 }

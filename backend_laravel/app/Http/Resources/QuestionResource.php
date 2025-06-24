@@ -20,7 +20,6 @@ class QuestionResource extends JsonResource
             'title'   => $this->title,
             'type'    => $this->type,
             'options' => $this->options,
-            'order'   => $this->order,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             // Pour inclure les réponses associées, décommente si besoin :
