@@ -6,7 +6,8 @@ Jour 3: Création des seeders & des factories (5h)
 Jour 4: Création du controller SurveyController pour l'enregistrement des réponses sous une url_token, voir les questions et voir les réponses liées à une url (9h)
 Jour 5: Création du controller DashboardController pour les données des Chart
 Jour 6: Création du controller AnswerController pour l'affichage des réponses
-Jour 7: 
+Jour 7: Mise en place des seeders et des factories
+Jour 8: 
 
 Commandes utilisées lors du développement:
 
