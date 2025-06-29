@@ -7,7 +7,8 @@ Jour 4: Création du controller SurveyController pour l'enregistrement des répo
 Jour 5: Création du controller DashboardController pour les données des Chart
 Jour 6: Création du controller AnswerController pour l'affichage des réponses
 Jour 7: Mise en place des seeders et des factories
-Jour 8: 
+Jour 8: Tests, corrections des bugs côté backend
+Jour 9: Création de la page du formulaire de questions côté frontend
 
 Commandes utilisées lors du développement:
 
@@ -42,6 +43,7 @@ Commandes utilisées lors du développement:
 - php artisan make:resource RadarChartDataResource
 - php artisan db:seed
 - php artisan db:seed --class=AnswerSeeder
+- npm install axios
 
 Resources utilisées lors du développement:
 
