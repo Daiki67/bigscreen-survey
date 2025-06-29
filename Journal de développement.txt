@@ -44,6 +44,7 @@ Commandes utilisées lors du développement:
 - php artisan db:seed
 - php artisan db:seed --class=AnswerSeeder
 - npm install axios
+- npm install apexcharts vue3-apexcharts --save
 
 Resources utilisées lors du développement:
 
