@@ -1,19 +1,42 @@
 <script setup>
+import axios from '@/utilities/axios.js'
+import { ref, onMounted } from 'vue';
+import { getAccessToken } from '@/utilities/utils';
 
+const Questions = ref([]);
+const errorMessage = ref('');
+
+const fetchQuestions = async () => {
+  try {
+    errorMessage.value = '';
+    const response = await axios.get('/admin/survey/questions', {
+      headers: { Authorization: 'Bearer ' + getAccessToken() }
+    });
+    Questions.value = response.data.data;
+    //console.log(Questions.value);
+  }catch(e){
+    console.error('Erreur lors de la récupération des questions: ', e);
+    errorMessage.value = 'Erreur lors de la récupération des questions:';
+  }
+}
+
+onMounted(fetchQuestions);
 </script>
 
 <template>
 <table>
   <thead>
-    <td>N°</td>
-    <td>Corps de la question</td>
-    <td>Type</td>
-  </thead>
-  <tbody>
     <tr>
-      <td>1</td>
-      <td>Votre adresse mail</td>
-      <td>B</td>
+      <td>N°</td>
+      <td>Corps de la question</td>
+      <td>Type</td>
+    </tr>
+  </thead>
+  <tbody v-if="Questions">
+    <tr v-for="Q in Questions" :key="Q.id">
+      <td> {{ Q.id }} </td>
+      <td> {{ Q.body }} </td>
+      <td> {{ Q.type }} </td>
     </tr>
   </tbody>
 </table>
@@ -46,5 +69,9 @@ tbody td {
   border-bottom: 1px solid #2c2c2c;
   font-weight: 500;
 }
+
+/*tbody td:nth-child(2) {
+  background: #2c2c2c;
+}*/
 </style>
 
