@@ -29,7 +29,7 @@ export const isAuthenticated = async() => {
       return false
     }
 
-    const response = await axios.get('/auth',{
+    const response = await axios.get('/admin/auth',{
       headers: { Authorization: 'Bearer ' + token }  
     });
     console.log(response.data.authenticated);
