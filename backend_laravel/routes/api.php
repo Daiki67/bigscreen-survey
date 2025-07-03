@@ -6,7 +6,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\AuthController;
-
+use Laravel\Sanctum\Sanctum;
 
 Route::controller(SurveyController::class)->prefix('survey')->group(function () {
     Route::get('/question', 'index');
@@ -28,7 +28,8 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
         Route::get('/all', 'index');
     });
 
+    Route::get('/auth', [AuthController::class, 'AuthAdmin']);
+    Route::delete('/logout', [AuthController::class, 'logout']);
 });
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
