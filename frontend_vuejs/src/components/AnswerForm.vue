@@ -1,11 +1,31 @@
 <script setup>
-import {computed, ref} from 'vue';
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { getUrlToken } from '@/utilities/utils.js';
 
+const PersonalAnswer = ref([]);
+//const RadioNumber = ref(0);
+const errorMessage = ref('');
 
+const fetchUserAnswer = async () => {
+  try {
+    errorMessage.value = '';
+    const response = await axios.get(`http://localhost:8000/api/survey/result/${getUrlToken()}`);
+    PersonalAnswer.value = response.data.submission.answers;
+    //RadioNumber.value = PersonalAnswer.value;
+    //console.log(PersonalAnswer.value);
+  } catch (e) {
+    console.error ('Erreur de récupération de la réponse', e);
+    errorMessage.value = "Erreur lors de la récupération des réponses de l'utilisateur";
+    alert(errorMessage.value);
+  }
+};
+
+onMounted(fetchUserAnswer);
 </script>
 
 <template>
-  <form v-on:submit="SurveySubmitted">
+  <form>
 
     <section class="LogoContainer">
       <figure>
@@ -18,31 +38,66 @@ import {computed, ref} from 'vue';
 
     <section class="QuestionContainer">
 
-      <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 1/20</div>
-        <div class="QuestionBody">Votre adresse mail</div>
-        <input type="text" value="a@gmail.com" disabled>
-        <hr>
-      </article>
+      <article class="QuestionAnswer" v-for="ans in PersonalAnswer" :key="ans.id">
+        <div class="QuestionNumber"> {{ ans.question.title }} </div>
+        <div class="QuestionBody"> {{ ans.question.body }} </div>
+        <input type="text" v-if="ans.question.type === 'B'" :value='ans.value' disabled>
 
-      <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 2/20</div>
-        <div class="QuestionBody">Votre âge</div>
-        <input type="text" value="12" disabled>
-        <hr>
-      </article>
+        <!-- Div pour les réponses concernant la question B -->
+        <div v-if="ans.question.type === 'A'" class="QuestionRadioGroup">
+          <div class="QuestionRadioOption">
+          <input
+          type="radio"
+          name="gender"
+          value="Homme"
+          checked
+          disabled
+          >
+          <span> {{ ans.value }} </span>
+          </div>
+        </div>
 
-      <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 3/20</div>
-        <div class="QuestionBody">Votre sexe</div>
-        <input type="text" value="Homme" disabled>
-        <hr>
-      </article>
-
-      <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 4/20</div>
-        <div class="QuestionBody">Nombre de personne dans votre foyer (adulte & enfants)</div>
-        <input type="text" value="5" disabled>
+        <!-- Div contenant les input pour la réponse aux question de type C -->
+         <div class="QuestionRadioGroupSelect">
+          <div v-if="ans.question.type === 'C'" class="QuestionRadioSelect">
+          <input
+          type="radio"
+          name="number1"
+          value=1
+          :checked="RadioNumber >= 1"
+          >
+          <span></span>
+            <input
+              type="radio"
+              name="number2"
+              value=2
+              :checked="RadioNumber >= 2"
+            >
+            <span></span>
+            <input
+              type="radio"
+              name="number3"
+              value=3
+              :checked="RadioNumber >= 3"
+            >
+            <span></span>
+            <input
+              type="radio"
+              name="number4"
+              value=4
+              :checked="RadioNumber >= 4"
+            >
+            <span></span>
+            <input
+              type="radio"
+              name="number5"
+              value=5
+              :checked="RadioNumber >= 5"
+            >
+            <span></span>
+          </div>
+          <p>{{ RadioNumber }}</p>
+        </div>
         <hr>
       </article>
 
@@ -130,5 +185,133 @@ import {computed, ref} from 'vue';
     border-style: dotted;
     border-width: 2px;
     border-color: #00b8ff;
+  }
+
+  /* Pour les réponses aux types C */
+   .QuestionRadioGroup {
+    /*border: 1px solid white;*/
+    margin: 30px 0px;
+  }
+
+   .QuestionRadioGroupSelect {
+    display: flex;
+    align-items: center;
+  }
+
+  .QuestionRadioGroupSelect p {
+    display: inline-flex;
+    /*border: 1px solid white;*/
+    height: auto;
+    margin: 0px 0px 0px 20px;
+    color: #00b8ff;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 2rem;
+  }
+
+  .QuestionRadioOption,
+  .QuestionRadioSelect {
+    margin: 25px 0px;
+    padding: 12px 0px 12px 10px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    color: #ffffff;
+    border-style: dotted;
+    border-width: 2px;
+    border-color: #00b8ff
+  }
+
+  .QuestionRadioOption:hover {
+    background-color: #2c2c2c;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+
+  .QuestionRadioOption:first-of-type {
+    margin-top: 0px;
+  }
+
+  .QuestionRadioOption:last-of-type {
+    margin-bottom: 0px;
+  }
+
+  .QuestionRadioOption input[type = 'radio'],
+  .QuestionRadioSelect input[type = 'radio'] {
+    position: absolute;
+    display: none;
+    opacity: 0;
+    width: 0;
+    height:0;
+  }
+
+  .QuestionRadioOption span,
+  .QuestionRadioSelect span {
+    position: relative;
+    padding-left: 35px;
+    display: inline-block;
+    line-height: 25px;
+    transition: background-color 0.3s;
+  }
+
+  .QuestionRadioSelect span {
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+
+  .QuestionRadioOption span::before,
+  .QuestionRadioSelect span::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00b8ff;
+    border-radius: 50%;
+    transition: border-color 0.3s ease;
+  }
+  .QuestionRadioSelect span::before {
+    border: 2px solid #2c2c2c;
+    background-color: #2c2c2c;
+  }
+
+  .QuestionRadioOption span::after,
+  .QuestionRadioSelect span::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    background-color: #00b8ff;
+    border-radius:50%;
+  }
+
+  .QuestionRadioSelect span::after {
+    left: 0;
+    top: 0;
+    width: 23px;
+    height: 23px;
+    background-color: red;
+  }
+
+  .QuestionRadioOption input[type = 'radio']:checked + span::after,
+  .QuestionRadioSelect input[type = 'radio']:checked + span::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    background-color: #00b8ff;
+    border-radius:50%;
+    transform: scale(1);
+    transition:transform 0.4s;
+  }
+
+  .QuestionRadioSelect input[type = 'radio']:checked + span::after {
+    left: 0;
+    top: 0;
+    width: 23px;
+    height: 23px;
   }
 </style>
