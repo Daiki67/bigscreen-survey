@@ -9,6 +9,8 @@ Jour 6: Création du controller AnswerController pour l'affichage des réponses
 Jour 7: Mise en place des seeders et des factories
 Jour 8: Tests, corrections des bugs côté backend
 Jour 9: Création de la page du formulaire de questions côté frontend
+Jour 10: Récupération des données depuis la base de données 
+Jour 11: Création de la function auth dans le AuthController et fixation du bug du 401 Unauthorized au niveau frontend concernant les routes administrateur
 
 Commandes utilisées lors du développement:
 
@@ -44,7 +46,7 @@ Commandes utilisées lors du développement:
 - php artisan db:seed
 - php artisan db:seed --class=AnswerSeeder
 - npm install axios
-- npm install apexcharts vue3-apexcharts --save
+- npm install apexcharts vue3cd-apexcharts --save
 
 Resources utilisées lors du développement:
 
@@ -68,4 +70,23 @@ Method Illuminate\Validation\Validator::validateRequire does not exist.
 
 R: Revoir l'état de validation du formulaire.
 
-- 
+- utils.js:19  GET http://localhost:8000/api/admin/auth 401 (Unauthorized)
+
+R: Ajouter le token dans les headers et vérifier l'espacement au niveau de Bearer.
+Ex: 
+Avant: 'Bearer'
+Après: 'Bearer '
+
+- axios.js:13 Uncaught ReferenceError: Cannot access 'getAccessToken' before initialization
+    at axios.js:13:40
+(anonymous)	@	axios.js:13
+
+R: Définir le token (getAccessToken) avant la vérification dans  
+
+- AxiosError
+ {message: 'Request failed with status code 405', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+
+R: Vérifier la méthode utilisée lors de l'appel de l'Api avec axios au niveau du frontend
+
+- POST http://localhost:8000/api/admin/logout 401 (Unauthorized)
+R: Mise en place de la vérification de la disponobilité du token dans le navigateur et configuration de la redirection par conséquent dans le index.ts
