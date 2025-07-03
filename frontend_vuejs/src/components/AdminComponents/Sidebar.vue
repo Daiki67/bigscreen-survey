@@ -1,30 +1,61 @@
 <script setup>
 import { RouterLink } from 'vue-router';
+import axios from '@/utilities/axios.js';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { getAccessToken, removeAccessToken } from '@/utilities/utils.js';
+
+const errorMessage = ref('');
+const router = useRouter();
+
+const handleLogout = async () => {
+  try {
+    errorMessage.value = '';
+
+    await axios.delete('/logout', {
+      headers: { Authorization: 'Bearer ' +  getAccessToken() }
+    });
+
+    removeAccessToken();
+
+    router.push('/administration');
+  }catch(e){
+    console.error('Erreur Logout:', e);
+    errorMessage.value = 'Erreur survenue lors de la déconnexion';
+    alert(errorMessage.value);
+  }
+}
+
 
 </script>
 
 <template>
 <div class="SidebarContainer">
   <div class="SidebarDivLogo">
-    <figure>
-      <img src="" alt="logo">
-    </figure>
+    <div>
+      <h2>bigscreen</h2>
+    </div>
   </div>
   <div class="SidebarItems">
     <hr>
-    <router-link to="/dashboard" class="router-link">
+    <router-link to="/administration/dashboard" class="router-link">
       <!-- Définition de la classe active réactive lorsque le nom de la route correspond à la sélection  -->
       <button type="button" :class="{ 'active' : $route.name === 'Dashboard' }">
           Acceuil
       </button>
     </router-link>
-    <router-link to="/quiz" class="router-link">
+    <router-link to="/administration/quiz" class="router-link">
       <button type="button" :class="{ 'active' : $route.name === 'Quiz' }">
         Questionnaire
       </button>
     </router-link>
-    <router-link to="/response" class="router-link">
+    <router-link to="/administration/response" class="router-link">
       <button type="button" :class="{ 'active' : $route.name === 'Response' }">
+        Réponses
+      </button>
+    </router-link>
+    <router-link to="#" class="router-link" @click="handleLogout">
+      <button type="button">
         Réponses
       </button>
     </router-link>
@@ -51,15 +82,18 @@ import { RouterLink } from 'vue-router';
   align-items: center;
 }
 
-.SidebarDivLogo figure {
-  border: 1px solid #fff;
-  width: 55%;
+.SidebarDivLogo div {
+  /*border: 1px solid #fff;*/
+  width: 85%;
   height: 65%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.SidebarDivLogo figure img {
-  width: 100%;
-  height: 100%;
+.SidebarDivLogo div h2 {
+  font-size: 3.2rem;
+  color: #fff;
 }
 
 .SidebarItems {
