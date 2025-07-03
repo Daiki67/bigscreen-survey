@@ -17,6 +17,7 @@ const fetchQuestions = async () => {
   }catch(e){
     console.error('Erreur lors de la récupération des questions: ', e);
     errorMessage.value = 'Erreur lors de la récupération des questions:';
+    alert(errorMessage.value);
   }
 }
 
