@@ -1,10 +1,13 @@
 <script setup>
-import {computed, ref} from 'vue';
+import axios from '@/utilities/axios.js';
+import {onMounted, ref} from 'vue';
 
 const SelectedGender = ref('');
 const SelectedNumber =ref(0);
 const RadioNumber = ref(0);
 const openModal = ref(false);
+const errorMessage = ref('');
+const Questions = ref([]);
 
 const SelectGender = (GenderValue) => {
   SelectedGender.value = GenderValue
@@ -19,10 +22,24 @@ const SelectNumber = (NumberValue) => {
   }
 };
 
+const fetchQuestions = async () => {
+  try {
+    errorMessage.value = '';
+    const response = await axios.get('/survey/question');
+    Questions.value = response.data.data;
+    //console.log(Questions.value);
+  } catch (e) {
+    console.error('Erreur de récupération des questions:', e);
+    errorMessage.value = 'Erreur lors de la récupération des questions';
+    alert(errorMessage.value);
+  }
+}
+
 const SurveySubmitted = (e) => {
   e.preventDefault();
 };
 
+onMounted(fetchQuestions);
 
 </script>
 
@@ -40,21 +57,111 @@ const SurveySubmitted = (e) => {
 
     <section class="QuestionContainer">
 
-      <article class="QuestionAnswer">
+      <article class="QuestionAnswer" v-for="Q in Questions" :key="Q.id">
+        <div class="QuestionNumber"> {{ Q.title }} </div>
+        <div class="QuestionBody"> {{ Q.body }} </div>
+        <input type="email" v-if="Q.type === 'B'" placeholder="Votre réponse ici..." required>
+        <div class="QuestionRadioGroup" v-if="Q.type === 'A'">
+          <div class="QuestionRadioOption" @click="SelectGender('Homme')" >
+          <input
+          type="radio"
+          name="gender"
+          value="Homme"
+          required
+          :checked="SelectedGender === 'Homme'"
+          >
+          <span>Homme</span>
+          </div>
+          <div class="QuestionRadioOption" @click="SelectGender('Femme')">
+            <input
+              type="radio"
+              name="gender"
+              value="Femme"
+              required
+              :checked="SelectedGender === 'Femme'"
+            >
+            <span>Femme</span>
+          </div>
+          <div class="QuestionRadioOption" @click="SelectGender('Préfère ne pas répondre')">
+            <input
+              type="radio"
+              name="gender"
+              value="Préfère ne pas répondre"
+              required
+              :checked="SelectedGender === 'Préfère ne pas répondre'"
+            >
+            <span>Préfère ne pas répondre</span>
+          </div>
+          <!-- <p>{{ SelectedGender }}</p> -->
+        </div>
+        <div class="QuestionRadioGroupSelect" v-if="Q.type === 'C'">
+          <div class="QuestionRadioSelect">
+          <input
+          type="radio"
+          name="number1"
+          value=1
+          :checked="RadioNumber >= 1"
+          >
+          <span
+            @click="SelectNumber(1)"
+            ></span>
+            <input
+              type="radio"
+              name="number2"
+              value=2
+              :checked="RadioNumber >= 2"
+            >
+            <span
+              @click="SelectNumber(2)"
+            ></span>
+            <input
+              type="radio"
+              name="number3"
+              value=3
+              :checked="RadioNumber >= 3"
+            >
+            <span
+              @click="SelectNumber(3)"
+            ></span>
+            <input
+              type="radio"
+              name="number4"
+              value=4
+              :checked="RadioNumber >= 4"
+            >
+            <span
+              @click="SelectNumber(4)"
+            ></span>
+            <input
+              type="radio"
+              name="number5"
+              value=5
+              :checked="RadioNumber >= 5"
+            >
+            <span
+              @click="SelectNumber(5)"
+            ></span>
+          </div>
+          <p>{{ RadioNumber }}</p>
+        </div>
+        <hr>
+      </article>
+
+      <!-- <article class="QuestionAnswer">
         <div class="QuestionNumber">Question 1/20</div>
         <div class="QuestionBody">Votre adresse mail</div>
         <input type="email" placeholder="Votre réponse ici..." required>
         <hr>
-      </article>
+      </article> -->
 
-      <article class="QuestionAnswer">
+      <!-- <article class="QuestionAnswer">
         <div class="QuestionNumber">Question 2/20</div>
         <div class="QuestionBody">Votre âge</div>
         <input type="text" placeholder="Votre réponse ici..." required>
         <hr>
-      </article>
+      </article> -->
 
-      <article class="QuestionAnswer">
+      <!-- <article class="QuestionAnswer">
         <div class="QuestionNumber">Question 3/20</div>
         <div class="QuestionBody">Votre sexe</div>
         <div class="QuestionRadioGroup">
@@ -88,12 +195,12 @@ const SurveySubmitted = (e) => {
             >
             <span>Préfère ne pas répondre</span>
           </div>
-          <!-- <p>{{ SelectedGender }}</p> -->
+           <p>{{ SelectedGender }}</p>
         </div>
         <hr>
-      </article>
+      </article> -->
 
-      <article class="QuestionAnswer">
+      <!-- <article class="QuestionAnswer">
         <div class="QuestionNumber">Question 4/20</div>
         <div class="QuestionBody">Nombre de personne dans votre foyer (adulte & enfants)</div>
         <div class="QuestionRadioGroupSelect">
@@ -147,7 +254,7 @@ const SurveySubmitted = (e) => {
           <p>{{ RadioNumber }}</p>
         </div>
         <hr>
-      </article>
+      </article> -->
 
     </section>
 
@@ -228,7 +335,7 @@ const SurveySubmitted = (e) => {
   .QuestionAnswer {
     width: 100%;
     height: auto;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     margin: 20px 0px ;
   }
 
@@ -240,6 +347,8 @@ const SurveySubmitted = (e) => {
   .QuestionBody {
     color: #ffffff;
     font-weight: 500;
+    margin: 15px 0 0 0px;
+    font-size: 1.2rem;
   }
 
   .QuestionAnswer input[type = 'text'],
