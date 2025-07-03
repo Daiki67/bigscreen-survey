@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Resources\UserResource;
-
-use function PHPUnit\Framework\isEmpty;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AuthController extends Controller
 {
@@ -19,14 +18,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'string|in:admin,user', 
+            'role' => 'string|in:admin,user',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'user', 
+            'role' => $request->role ?? 'user',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -77,16 +76,29 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // Récupère l'utilisateur authentifié via le token
+        $user = $request->user();
 
-        if ($request->user()) {
-            return response()->json([
-                'message' => 'User logged out successfully',
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'User logout failed'
-            ], 500);
+        if ($user) {
+            // Supprime le token d'accès personnel actuel utilisé pour cette requête
+            $user->currentAccessToken()->delete();
+
+            return response()->json(['message' => 'Déconnexion réussie.']);
         }
+
+        return response()->json(['message' => 'Aucun utilisateur authentifié ou token valide.'], 401);
     }
+
+    public function AuthAdmin() {
+        if(Auth::check()){
+            return response()->json([
+                'authenticated' => true,
+            ]);
+        }
+
+        return response()->json(['authenticated' => false]);
+
+    }
+    
+
 }
