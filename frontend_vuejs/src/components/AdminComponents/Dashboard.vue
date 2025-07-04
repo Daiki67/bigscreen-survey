@@ -15,15 +15,20 @@ const fetchDataChart = async () => {
     const response = await axios.get('/admin/dashboard/datacharts',{
       headers: { Authorization: 'Bearer ' + getAccessToken() }
     });
-    PieChartDataQuestion6.value = response.data.PieChartData.question_6;
-    PieChartDataQuestion7.value = response.data.PieChartData.question_7;
-    PieChartDataQuestion10.value = response.data.PieChartData.question_10;
+    
+    PieChartDataQuestion6.value = Object.entries(response.data.PieChartData.question_6).map(([key, value]) => ({
+      value: key,
+      count: value
+    }));
+    PieChartDataQuestion7.value = Object.entries(response.data.PieChartData.question_7).map(([key, value]) => ({
+      value: key,
+      count: value
+    }));
+    PieChartDataQuestion10.value = Object.entries(response.data.PieChartData.question_10).map(([key, value]) => ({
+      value: key,
+      count: value
+    }));
     RadarChartData.value = response.data.RadarChartData;
-
-    /* console.log(PieChartDataQuestion6.value);
-    console.log(PieChartDataQuestion7.value);
-    console.log(PieChartDataQuestion6.value); */
-    console.log(RadarChartData.value.map(obj => Number(obj.count)));
   } catch (e) {
     console.error('Erreur des données des graphiques', e);
     errorMessage.value = 'Erreur survenue lors de la récupération des données du graphique';
@@ -31,25 +36,68 @@ const fetchDataChart = async () => {
   }
 }
 
-/* var options = {
-            series: [5, 5, 2, 3],
-            chart: {
-            width: 700,
-            type: 'pie',
-          },
-          labels: ['Ordinateur', 'Smartphone', 'Tablette', 'Télévision'],
-          responsive: [{
-            breakpoint: 380,
-            options: {
-              chart: {
-                width: 500
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }]
-        }; */
+var PieChartOptionsQ6 = computed(() => ({
+  series: PieChartDataQuestion6.value.map(obj => Number(obj.count)),
+  chart: {
+    width: 500,
+    type: 'pie',
+  },
+  labels: PieChartDataQuestion6.value.map(obj => obj.value),
+  responsive: [{
+    breakpoint: 380,
+    options: {
+      chart: {
+        width: 0
+      },
+      legend: {
+        position: 'left'
+      }
+    }
+  }],
+ })
+);
+
+var PieChartOptionsQ7 = computed(() => ({
+  series: PieChartDataQuestion7.value.map(obj => Number(obj.count)),
+  chart: {
+    width: 455,
+    type: 'pie',
+  },
+  labels: PieChartDataQuestion7.value.map(obj => obj.value),
+  responsive: [{
+    breakpoint: 380,
+    options: {
+      chart: {
+        width: 0
+      },
+      legend: {
+        position: 'left'
+      }
+    }
+  }],
+ })
+);
+
+var PieChartOptionsQ10 = computed(() => ({
+  series: PieChartDataQuestion10.value.map(obj => Number(obj.count)),
+  chart: {
+    width: 500,
+    type: 'pie',
+  },
+  labels: PieChartDataQuestion10.value.map(obj => obj.value),
+  responsive: [{
+    breakpoint: 380,
+    options: {
+      chart: {
+        width: 0
+      },
+      legend: {
+        position: 'left'
+      }
+    }
+  }],
+ })
+);
 
 const RadarDataOptions = computed(() => ({
   series: [{
@@ -77,24 +125,24 @@ onMounted(fetchDataChart);
     <hr>
   </article>
   <article class="DashboardContent">
-    <!-- <ChartCard
-      ChartType="pie"
-      ChartOptions="d"
-      ChartSeries="d"
+    <ChartCard
+      :ChartType="PieChartOptionsQ6.chart.type"
+      :ChartOptions="PieChartOptionsQ6"
+      :ChartSeries="PieChartOptionsQ6.series"
       ChartTitle="Casques VR utilisés (Q6)"
     />
     <ChartCard
-      ChartType="pie"
-      ChartOptions="d"
-      ChartSeries="d"
+      :ChartType="PieChartOptionsQ7.chart.type"
+      :ChartOptions="PieChartOptionsQ7"
+      :ChartSeries="PieChartOptionsQ7.series"
       ChartTitle="Magasins d'applications (Q7)"
     />
     <ChartCard
-      ChartType="pie"
-      ChartOptions="d"
-      ChartSeries="d"
+      :ChartType="PieChartOptionsQ10.chart.type"
+      :ChartOptions="PieChartOptionsQ10"
+      :ChartSeries="PieChartOptionsQ10.series"
       ChartTitle="Utilisation principale (Q10)"
-    /> -->
+    />
     <ChartCard
       :ChartType="RadarDataOptions.options.chart.type"
       :ChartOptions="RadarDataOptions.options"
