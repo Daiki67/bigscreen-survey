@@ -12,7 +12,7 @@ const handleLogout = async () => {
   try {
     errorMessage.value = '';
 
-    await axios.delete('/logout', {
+    await axios.delete('/admin/logout', {
       headers: { Authorization: 'Bearer ' +  getAccessToken() }
     });
 
@@ -56,7 +56,7 @@ const handleLogout = async () => {
     </router-link>
     <router-link to="#" class="router-link" @click="handleLogout">
       <button type="button">
-        Réponses
+        Logout
       </button>
     </router-link>
   </div>
