@@ -1,5 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
+
+const emit = defineEmits(['open-detail']);
 
 const responses = ref([
   { email: 'alex@gmail.com', date: '26/06/2025' },
@@ -35,7 +37,7 @@ function next() {
         class="carousel-card"
         :class="{ active: i === activeIndex, left: i === (activeIndex - 1 + responses.length) % responses.length, right: i === (activeIndex + 1) % responses.length }"
       >
-        <div class="ResponseCard" @click="OpenDetail = true">
+        <div class="ResponseCard" @click="emit('open-detail', response)">
           <div class="ResponseCardEmail">{{ response.email }}</div>
           <div class="ResponseCardDate">
             Réponse soumise le {{ response.date }}
