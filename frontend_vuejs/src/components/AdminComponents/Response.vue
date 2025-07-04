@@ -3,59 +3,27 @@ import { ref } from 'vue';
 import Carousel from './Carousel.vue';
 
 const OpenDetail = ref(false);
+const selectedResponse = ref(null);
+
+function handleOpenDetail(response) {
+  selectedResponse.value = response;
+  OpenDetail.value = true;
+}
 
 </script>
 
 <template>
 <section class="Response">
+  
   <article class="ResponseTitle">
     <h2>Réponses des Utilisateurs</h2>
     <hr>
   </article>
+
   <article class="ResponseContent">
-    <!-- <div class="ResponseCardContainer">
-      <div class="ResponseCard" @click="OpenDetail = true">
-        <div class="ResponseCardEmail">alex@gmail.com</div>
-        <br>
-        <div class="ResponseCardDate">
-          Réponse soumise le 26/06/2025
-          <br>
-          <p>Cliquez pour voir les détails</p>
-        </div>
-      </div>
-      <div class="ResponseCard" @click="OpenDetail = true">
-        <div class="ResponseCardEmail">alex@gmail.com</div>
-        <br>
-        <div class="ResponseCardDate">
-          Réponse soumise le 26/06/2025
-          <br>
-          <p>Cliquez pour voir les détails</p>
-        </div>
-      </div>
-      <div class="ResponseCard" @click="OpenDetail = true">
-        <div class="ResponseCardEmail">alex@gmail.com</div>
-        <br>
-        <div class="ResponseCardDate">
-          Réponse soumise le 26/06/2025
-          <br>
-          <p>Cliquez pour voir les détails</p>
-        </div>
-      </div>
-      <div class="ResponseCard" @click="OpenDetail = true">
-        <div class="ResponseCardEmail">alex@gmail.com</div>
-        <br>
-        <div class="ResponseCardDate">
-          Réponse soumise le 26/06/2025
-          <br>
-          <p>Cliquez pour voir les détails</p>
-        </div>
-      </div>
-    </div>
-    <div class="ResponseButtonNavigation">
-      <button type="button" class="left-button"><</button>
-      <button type="button" class="right-button">></button>
-    </div> -->
-    <Carousel/>
+
+    <Carousel @open-detail="handleOpenDetail" />
+
   </article>
 
   <article class="DetailShadow" v-if="OpenDetail">
