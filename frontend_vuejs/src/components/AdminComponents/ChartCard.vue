@@ -1,30 +1,40 @@
 <script setup>
+import VueApexCharts from 'vue3-apexcharts';
 
-</script>
-
-<script>
-const ChartProps = [ 'ChartTitle' ];
-const PropsOptions = {};
-
-ChartProps.forEach(PropName => {
-  PropsOptions[PropName] = {
-    type : String,
+const props = defineProps({
+  ChartTitle: {
+    type: String,
     required: true
-  }
+  },
+  ChartType: {
+    type: String,
+    required: true
+  },
+  ChartOptions: {
+    type: Object,
+    required: true
+  },
+  ChartSeries: {
+    type: Array,
+    required: true
+  },
 });
-
-export default {
-  props: PropsOptions
-}
 </script>
 
 <template>
 <div class="ChartCard">
   <div class="ChartTitle">
-    <h3> {{ ChartTitle }} </h3>
+    <h3> {{ props.ChartTitle }} </h3>
   </div>
   <div class="ChartBlock">
-
+    <vue-apex-charts
+      width = "100%"
+      height = "100%"
+      :type = 'props.ChartType'
+      :options = "props.ChartOptions"
+      :series = "props.ChartSeries"
+    >
+    </vue-apex-charts>
   </div>
 </div>
 </template>
@@ -37,6 +47,8 @@ export default {
   padding: 35px 25px;
   margin-top: 50px;
   border-radius: 12px;
+  transform: translateY(0px);
+  transition: transform 0.4s ease-in-out;
 }
 
 .ChartCard:hover {
@@ -54,7 +66,7 @@ export default {
 }
 
 .ChartBlock {
-  border: 1px solid #fff;
+  /*border: 1px solid #fff;*/
   width: 90%;
   height: 330px;
   margin: auto;
