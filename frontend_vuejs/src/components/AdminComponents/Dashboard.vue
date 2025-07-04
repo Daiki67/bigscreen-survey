@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import ChartCard from './ChartCard.vue';
 import axios from '@/utilities/axios.js';
 import { getAccessToken } from '@/utilities/utils.js' ;
@@ -23,7 +23,7 @@ const fetchDataChart = async () => {
     /* console.log(PieChartDataQuestion6.value);
     console.log(PieChartDataQuestion7.value);
     console.log(PieChartDataQuestion6.value); */
-    console.log(RadarChartData.value);
+    console.log(RadarChartData.value.map(obj => Number(obj.count)));
   } catch (e) {
     console.error('Erreur des données des graphiques', e);
     errorMessage.value = 'Erreur survenue lors de la récupération des données du graphique';
@@ -51,29 +51,21 @@ const fetchDataChart = async () => {
           }]
         }; */
 
-const RadarDataOptions = ref({
-        series: [{
-          name: 'Series 1',
-          data: /* [3.75, 4.5, 3.5, 4.5, 4.5] */
-            RadarChartData.value.forEach((value, count) => {
-              [ count ]
-            })
-          ,
-        }],
-        options:{
-          chart: {
-            height: 850,
-            width: 500,
-            type: 'radar',
-          },
-          /* title: {
-            text: 'Quality Aspects of Bigscreen'
-          }, */
-          xaxis: {
-            categories: ['Image Quality', 'Interface Comfort', 'Network Connection', '3D Graphics Quality', 'Audio Quality']
-          }
-      },
-});
+const RadarDataOptions = computed(() => ({
+  series: [{
+    name: 'Series 1',
+    data: RadarChartData.value.map(obj => Number(obj.count))
+  }],
+  options: {
+    chart: {
+      height: 350,
+      type: 'radar',
+    },
+    xaxis: {
+      categories: RadarChartData.value.map(obj => obj.value)
+    }
+  }
+}));
 
 onMounted(fetchDataChart);
 </script>
