@@ -11,6 +11,7 @@ Jour 8: Tests, corrections des bugs côté backend
 Jour 9: Création de la page du formulaire de questions côté frontend
 Jour 10: Récupération des données depuis la base de données 
 Jour 11: Création de la function auth dans le AuthController et fixation du bug du 401 Unauthorized au niveau frontend concernant les routes administrateur
+jour 12: Ajout de apexcharts pour les différents graphiques
 
 Commandes utilisées lors du développement:
 
@@ -90,3 +91,16 @@ R: Vérifier la méthode utilisée lors de l'appel de l'Api avec axios au niveau
 
 - POST http://localhost:8000/api/admin/logout 401 (Unauthorized)
 R: Mise en place de la vérification de la disponobilité du token dans le navigateur et configuration de la redirection par conséquent dans le index.ts
+
+- main.ts:9 [Vue warn]: Invalid prop: type check failed for prop "ChartTitle". Expected String with value "undefined", got Undefined  
+  at <ChartCard ChartType="radar" ChartOptions= 
+{height: 350, type: 'radar'}
+
+ main.ts:9 [Vue warn]: Missing required prop: "ChartOption" 
+  at <ChartCard ChartType="radar" ChartOptions= 
+{height: 350, type: 'radar'}
+ ChartSeries= [{…}]... > 
+
+ Erreur de la lecture des propriétés de apexcharts
+
+ R: Revoir les props (assignation du type de la variable dans le composant)
