@@ -19,8 +19,12 @@ class AnswerController extends Controller
     public function index(): JsonResponse
     {
         try {
-            for ($i = 1; $i <= 20; $i++) {
-                $answers[$i] = $this->getAnswersByQuestionId($i);
+            $Submissions = Submission::all();
+            $lenghtSubmissions = $Submissions->count();
+            for ($i = 1; $i <= $lenghtSubmissions; $i++) {
+                for ($j = 1; $j < 20; $j++) { 
+                    $answers[$i][$j] = $this->getAnswersByQuestionId($i, $j);
+                }
             }
             // Retourne les soumissions paginées
             return response()->json([
@@ -34,18 +38,17 @@ class AnswerController extends Controller
             ], 500);
         }
     }
-    
 
-    private function getAnswersByQuestionId(int $questionId)
+
+    private function getAnswersByQuestionId(int $submissionId, int $questionId)
     {
         // Récupère les réponses pour une question spécifique
-        return Answer::where('question_id', $questionId)
-            ->whereNotNull('submission_id')
-            ->select('value', DB::raw('COUNT(*) as count'))
-            ->groupBy('value')
+        return Answer::where('submission_id', $submissionId)
+            ->where('question_id', $questionId)
+            ->select('value')
             ->get()
             ->map(function ($answer) {
-                return $answer->value . ' (' . $answer->count . ')';
+                return $answer->value;
             });
     }
 }
