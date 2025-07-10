@@ -1,5 +1,7 @@
 <script setup>
-import { ref, defineEmits } from 'vue';
+import axios from '@/utilities/axios.js';
+import { ref, defineEmits, onMounted } from 'vue';
+import { getAccessToken } from '@/utilities/utils.js';
 
 const emit = defineEmits(['open-detail']);
 
@@ -18,24 +20,41 @@ const responses = ref([
   { email: '8@example.com', date: '29/06/2025' },
 ]);
 
+const fetchAllUserResponse = async () => {
+  try {
+    const response = await axios.get('/admin/answers/all', {
+      headers: { Authorization: 'Bearer ' + getAccessToken() }
+    });
+    console.log(response.data);
+  } catch (e) {
+
+  }
+} ;
+
 const activeIndex = ref(0);
 
 function prev() {
   activeIndex.value = (activeIndex.value - 1 + responses.value.length) % responses.value.length;
 }
+
 function next() {
   activeIndex.value = (activeIndex.value + 1) % responses.value.length;
 }
+
+onMounted(fetchAllUserResponse);
 </script>
 
 <template>
   <section class="carousel">
     <div class="carousel-inner">
-      <div
+      <article
         v-for="(response, i) in responses"
         :key="i"
         class="carousel-card"
-        :class="{ active: i === activeIndex, left: i === (activeIndex - 1 + responses.length) % responses.length, right: i === (activeIndex + 1) % responses.length }"
+        :class="{
+            active: i === activeIndex,
+            left: i === (activeIndex - 1 + responses.length) % responses.length,
+            right: i === (activeIndex + 1) % responses.length }"
       >
         <div class="ResponseCard" @click="emit('open-detail', response)">
           <div class="ResponseCardEmail">{{ response.email }}</div>
@@ -44,7 +63,7 @@ function next() {
             <p>Cliquez pour voir les détails</p>
           </div>
         </div>
-      </div>
+      </article>
       <button class="carousel-arrow left" @click="prev">&#60;</button>
       <button class="carousel-arrow right" @click="next">&#62;</button>
       <div class="carousel-dots">
