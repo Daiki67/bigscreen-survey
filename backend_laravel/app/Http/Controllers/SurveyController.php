@@ -86,7 +86,7 @@ class SurveyController extends Controller
 
         return response()->json([
             'message' => 'Réponses validées avec succès.',
-            'url-token' => $submission->url_token,
+            'urlToken' => $submission->url_token,
             'data' => $answers,
         ],201);
 
