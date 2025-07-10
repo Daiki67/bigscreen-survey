@@ -1,26 +1,17 @@
 <script setup>
 import axios from '@/utilities/axios.js';
-import {onMounted, ref} from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { getUrlToken } from '@/utilities/utils.js' ;
 
-const SelectedGender = ref('');
-const SelectedNumber =ref(0);
-const RadioNumber = ref(0);
 const openModal = ref(false);
 const errorMessage = ref('');
 const Questions = ref([]);
+const answer = ref({});
+const UrlToken = ref(null);
+const accessUrl = ref(null);
+const router = useRouter();
 
-const SelectGender = (GenderValue) => {
-  SelectedGender.value = GenderValue
-};
-
-const SelectNumber = (NumberValue) => {
-  SelectedNumber.value = NumberValue;
-  for ( let i = 1 ; i <=  5 ; i++ ) {
-    if ( i === SelectedNumber.value ){
-      RadioNumber.value = i;
-    }
-  }
-};
 
 const fetchQuestions = async () => {
   try {
@@ -35,8 +26,57 @@ const fetchQuestions = async () => {
   }
 }
 
-const SurveySubmitted = (e) => {
+//Vérification de la validation de tous les champs
+const validateAnswers = () => {
+  //Boucle sur les 20 questions afin d'identifier un champ manquant
+  for (let q of Questions.value) {
+    if (!answer.value[q.id]) {
+      errorMessage = 'Merci de répondre à toutes les questions';
+      return false
+    }
+  }
+  errorMessage = '';
+  return true
+};
+
+watch(UrlToken, (newToken) => {
+
+  if (newToken) {
+
+    //Utilise le routeur VueJs pour générer l'URL
+    accessUrl.value = router.resolve({
+      name: 'answer',
+      params: { token: newToken }
+    }).href;
+
+  }else {
+    accessUrl.value = null;
+  }
+
+  return {
+    UrlToken,
+    accessUrl
+  }
+
+})
+
+const SurveySubmitted = async(e) => {
   e.preventDefault();
+  if (!validateAnswers) return;
+
+  try {
+    errorMessage.value = '';
+    const response = await axios.post('/survey/store', {
+      answer: answer.value
+    });
+    UrlToken.value = response.data.urlToken
+    openModal.value = true;
+  } catch (e) {
+    console.error('Erreur lors de la sauvegarde des réponses du formulaire:', e);
+    errorMessage.value = 'Erreur survenue lors de la sauvegarde des réponses du formulaire';
+    alert(errorMessage.value);
+  }
+
 };
 
 onMounted(fetchQuestions);
@@ -44,7 +84,7 @@ onMounted(fetchQuestions);
 </script>
 
 <template>
-  <form v-on:submit="SurveySubmitted">
+  <form @submit="SurveySubmitted">
 
     <section class="LogoContainer">
       <figure>
@@ -60,206 +100,66 @@ onMounted(fetchQuestions);
       <article class="QuestionAnswer" v-for="Q in Questions" :key="Q.id">
         <div class="QuestionNumber"> {{ Q.title }} </div>
         <div class="QuestionBody"> {{ Q.body }} </div>
-        <input type="email" v-if="Q.type === 'B'" placeholder="Votre réponse ici..." required>
+
         <div class="QuestionRadioGroup" v-if="Q.type === 'A'">
-          <div class="QuestionRadioOption" @click="SelectGender('Homme')" >
-          <input
-          type="radio"
-          name="gender"
-          value="Homme"
-          required
-          :checked="SelectedGender === 'Homme'"
+          <div class="QuestionRadioOption" v-for="(item, index) in Q.options" :key="index"
+            @click="answer[Q.id] = item"
           >
-          <span>Homme</span>
-          </div>
-          <div class="QuestionRadioOption" @click="SelectGender('Femme')">
             <input
               type="radio"
-              name="gender"
-              value="Femme"
+              :name="'answer.'+ Q.id"
+              :value="item"
+              v-model="answer[Q.id]"
+              :checked="answer[Q.id] === item"
               required
-              :checked="SelectedGender === 'Femme'"
             >
-            <span>Femme</span>
+            <span> {{ item }} </span>
           </div>
-          <div class="QuestionRadioOption" @click="SelectGender('Préfère ne pas répondre')">
-            <input
-              type="radio"
-              name="gender"
-              value="Préfère ne pas répondre"
-              required
-              :checked="SelectedGender === 'Préfère ne pas répondre'"
-            >
-            <span>Préfère ne pas répondre</span>
-          </div>
-          <!-- <p>{{ SelectedGender }}</p> -->
+          <!-- <p>{{ answer[Q.id] }}</p> -->
         </div>
+
+        <input
+          type="email" v-if="Q.type === 'B' && Q.id === 1"
+          :name="'answer.' + Q.id"
+          placeholder="Votre adresse email ici ..."
+          v-model="answer[Q.id]"
+          required
+        >
+        <input
+          type="text" v-if="Q.type === 'B' && Q.id !== 1"
+          :name="'answer.' + Q.id"
+          placeholder="Votre réponse ici ... "
+          v-model="answer[Q.id]"
+          required
+        >
+
         <div class="QuestionRadioGroupSelect" v-if="Q.type === 'C'">
           <div class="QuestionRadioSelect">
-          <input
-          type="radio"
-          name="number1"
-          value=1
-          :checked="RadioNumber >= 1"
-          >
-          <span
-            @click="SelectNumber(1)"
-            ></span>
-            <input
-              type="radio"
-              name="number2"
-              value=2
-              :checked="RadioNumber >= 2"
+            <div
+              class="RadioCheckedDiv"
+              v-for="n in Q.options"
+              :key="n"
+              :class="{ ischecked : answer[Q.id] >= n }"
             >
-            <span
-              @click="SelectNumber(2)"
-            ></span>
-            <input
-              type="radio"
-              name="number3"
-              value=3
-              :checked="RadioNumber >= 3"
-            >
-            <span
-              @click="SelectNumber(3)"
-            ></span>
-            <input
-              type="radio"
-              name="number4"
-              value=4
-              :checked="RadioNumber >= 4"
-            >
-            <span
-              @click="SelectNumber(4)"
-            ></span>
-            <input
-              type="radio"
-              name="number5"
-              value=5
-              :checked="RadioNumber >= 5"
-            >
-            <span
-              @click="SelectNumber(5)"
-            ></span>
+              <input
+                type="radio"
+                :name="'answer.'+ Q.id"
+                :value='n'
+                v-model="answer[Q.id]"
+              >
+              <span></span>
+            </div>
           </div>
-          <p>{{ RadioNumber }}</p>
+          <p> {{ answer[Q.id] }} </p>
         </div>
+
         <hr>
       </article>
-
-      <!-- <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 1/20</div>
-        <div class="QuestionBody">Votre adresse mail</div>
-        <input type="email" placeholder="Votre réponse ici..." required>
-        <hr>
-      </article> -->
-
-      <!-- <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 2/20</div>
-        <div class="QuestionBody">Votre âge</div>
-        <input type="text" placeholder="Votre réponse ici..." required>
-        <hr>
-      </article> -->
-
-      <!-- <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 3/20</div>
-        <div class="QuestionBody">Votre sexe</div>
-        <div class="QuestionRadioGroup">
-          <div class="QuestionRadioOption" @click="SelectGender('Homme')" >
-          <input
-          type="radio"
-          name="gender"
-          value="Homme"
-          required
-          :checked="SelectedGender === 'Homme'"
-          >
-          <span>Homme</span>
-          </div>
-          <div class="QuestionRadioOption" @click="SelectGender('Femme')">
-            <input
-              type="radio"
-              name="gender"
-              value="Femme"
-              required
-              :checked="SelectedGender === 'Femme'"
-            >
-            <span>Femme</span>
-          </div>
-          <div class="QuestionRadioOption" @click="SelectGender('Préfère ne pas répondre')">
-            <input
-              type="radio"
-              name="gender"
-              value="Préfère ne pas répondre"
-              required
-              :checked="SelectedGender === 'Préfère ne pas répondre'"
-            >
-            <span>Préfère ne pas répondre</span>
-          </div>
-           <p>{{ SelectedGender }}</p>
-        </div>
-        <hr>
-      </article> -->
-
-      <!-- <article class="QuestionAnswer">
-        <div class="QuestionNumber">Question 4/20</div>
-        <div class="QuestionBody">Nombre de personne dans votre foyer (adulte & enfants)</div>
-        <div class="QuestionRadioGroupSelect">
-          <div class="QuestionRadioSelect">
-          <input
-          type="radio"
-          name="number1"
-          value=1
-          :checked="RadioNumber >= 1"
-          >
-          <span
-            @click="SelectNumber(1)"
-            ></span>
-            <input
-              type="radio"
-              name="number2"
-              value=2
-              :checked="RadioNumber >= 2"
-            >
-            <span
-              @click="SelectNumber(2)"
-            ></span>
-            <input
-              type="radio"
-              name="number3"
-              value=3
-              :checked="RadioNumber >= 3"
-            >
-            <span
-              @click="SelectNumber(3)"
-            ></span>
-            <input
-              type="radio"
-              name="number4"
-              value=4
-              :checked="RadioNumber >= 4"
-            >
-            <span
-              @click="SelectNumber(4)"
-            ></span>
-            <input
-              type="radio"
-              name="number5"
-              value=5
-              :checked="RadioNumber >= 5"
-            >
-            <span
-              @click="SelectNumber(5)"
-            ></span>
-          </div>
-          <p>{{ RadioNumber }}</p>
-        </div>
-        <hr>
-      </article> -->
 
     </section>
 
     <section class="SubmitButtonSection">
-      <button type="submit" @click="openModal = true">Finaliser</button>
+      <button type="submit">Finaliser</button>
     </section>
 
     <section>
@@ -273,7 +173,7 @@ onMounted(fetchQuestions);
              <br>
               Si vous désirez consulter vos réponse ultérieurement, voici votre lien unique :
           </p>
-          <button @click="openModal = false"><router-link to="/answer" class="router-link">http://example.com/answers/s-mcfghuiii08xr4qil4p</router-link></button>
+          <button @click="openModal = false"><a :href="accessUrl">{{ accessUrl }}</a></button>
         </div>
       </div>
     </section>
@@ -391,6 +291,10 @@ onMounted(fetchQuestions);
     border-color: #00b8ff
   }
 
+  .QuestionRadioSelect {
+    display: flex;
+  }
+
   .QuestionRadioOption:hover {
     background-color: #2c2c2c;
     transition: 0.3s;
@@ -412,6 +316,17 @@ onMounted(fetchQuestions);
     opacity: 0;
     width: 0;
     height:0;
+  }
+
+  /*.QuestionRadioOption input[type = 'radio'],*/
+  .QuestionRadioSelect input[type = 'radio'] {
+    cursor: pointer;
+    position: absolute;
+    opacity: 0;
+    z-index: 2;
+    display: flex;
+    width: 25px;
+    height: 25px;
   }
 
   .QuestionRadioOption span,
@@ -477,7 +392,7 @@ onMounted(fetchQuestions);
     height: 12px;
     background-color: #00b8ff;
     border-radius:50%;
-    transform: scale(1);
+    transform: scale(1.05);
     transition:transform 0.4s;
   }
 
@@ -567,5 +482,22 @@ onMounted(fetchQuestions);
 
   .router-link{
     color: #00b8ff;
+  }
+
+  .RadioCheckedDiv {
+    display: flex;
+  }
+
+  .ischecked span::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 23px;
+    height: 23px;
+    background-color: #00b8ff;
+    border-radius:50%;
+    transform: scale(1.05);
+    transition:transform 0.4s;
   }
 </style>
