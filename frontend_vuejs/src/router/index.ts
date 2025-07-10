@@ -17,9 +17,10 @@ const router = createRouter({
       component: SurveyView,
     },
     {
-      path: '/answer',
+      path: '/answer/:token', //Route dynamique avec pour paramètre token
       name: 'answer',
-      component: AnswerView
+      component: AnswerView,
+      props: true,// Important car on passe le paramètre de l'URL 'token' comme une prop au composant
     },
     {
       path: '/administration',
