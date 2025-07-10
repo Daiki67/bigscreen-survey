@@ -7,6 +7,7 @@ use App\Models\Submission;
 use App\Http\Resources\SubmissionResource; // N'oubliez pas d'importer votre ressource
 use Illuminate\Http\JsonResponse;
 use App\Models\Answer; // Assurez-vous d'importer le modèle Answer
+use App\Models\Question;
 use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
@@ -19,10 +20,11 @@ class AnswerController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $Submissions = Submission::all();
-            $lenghtSubmissions = $Submissions->count();
+
+            $lenghtSubmissions = Submission::all()->count();
+
             for ($i = 1; $i <= $lenghtSubmissions; $i++) {
-                for ($j = 1; $j < 20; $j++) { 
+                for ($j = 1; $j <= 20; $j++) { 
                     $answers[$i][$j] = $this->getAnswersByQuestionId($i, $j);
                 }
             }
