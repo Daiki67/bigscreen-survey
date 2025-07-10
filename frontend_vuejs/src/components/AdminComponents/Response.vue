@@ -1,38 +1,129 @@
 <script setup>
-import { ref } from 'vue';
-import Carousel from './Carousel.vue';
+import axios from '@/utilities/axios.js'
+import { ref, onMounted, computed } from 'vue';
+import { getAccessToken } from '@/utilities/utils';
+//import Carousel from './Carousel.vue';
 
-const OpenDetail = ref(false);
+const Responses = ref([]);
+const Questions = ref([]);
+const errorMessage = ref('');
+const currentPage = ref(1);
+const tablePerPage = ref(3);
+
+/* const OpenDetail = ref(false);
 const selectedResponse = ref(null);
 
 function handleOpenDetail(response) {
   selectedResponse.value = response;
   OpenDetail.value = true;
+  } */
+
+const totalPages = computed(() => {
+  return Math.ceil(Responses.value.length/tablePerPage.value);
+});
+
+const paginatedTable = computed(() => {
+  const start = (currentPage.value - 1) * tablePerPage.value;
+  const end = start + tablePerPage.value;
+  return Responses.value.slice(start, end);
+});
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
 }
 
+const fetchQuestions = async () => {
+  try {
+    errorMessage.value = '';
+    const res = await axios.get('/admin/survey/questions', {
+      headers: { Authorization: 'Bearer ' + getAccessToken() }
+    });
+    Questions.value = res.data.data;
+    //console.log(Questions.value);
+  }catch(e){
+    console.error('Erreur lors de la récupération des questions: ', e);
+    errorMessage.value = 'Erreur lors de la récupération des questions:';
+    alert(errorMessage.value);
+  }
+}
+
+const fetchResponses = async () => {
+  try {
+    errorMessage.value = '';
+    const response = await axios.get('/admin/answers/all', {
+      headers: { Authorization: 'Bearer ' + getAccessToken() }
+    });
+    Responses.value = Object.values(response.data.DataAnswersQuestion); //Object.value permet de transformer le proxyObject en tableau d'objets
+    //console.log(Responses.value);
+  }catch(e){
+    console.error('Erreur lors de la récupération des réponses: ', e);
+    errorMessage.value = 'Erreur lors de la récupération des réponses:';
+    alert(errorMessage.value);
+  }
+}
+
+onMounted(fetchQuestions);
+onMounted(fetchResponses);
 </script>
 
 <template>
 <section class="Response">
-  
+
   <article class="ResponseTitle">
     <h2>Réponses des Utilisateurs</h2>
     <hr>
   </article>
 
-  <article class="ResponseContent">
+  <div v-if="paginatedTable.length > 0">
+
+    <article class="ResponseContent" v-for="(R, i) in paginatedTable" :key="i">
+
+      <table>
+        <thead>
+          <tr>
+            <td>N°</td>
+            <td>Corps de la question</td>
+            <td>Response</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="Q in Questions" :key="Q.id">
+            <td> {{ Q.id }} </td>
+            <td> {{ Q.body }} </td>
+            <td>
+              {{
+                R[Q.id][0]
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </article>
+
+    <section class="ButtonSection">
+      <button :disabled="currentPage === 1" type="button" @click="goToPage(currentPage - 1)">Précédent</button>
+      <button :disabled="currentPage === totalPages" type="button" @click="goToPage(currentPage + 1)">Suivant</button>
+    </section>
+
+  </div>
+
+
+  <!-- <article class="ResponseContent">
 
     <Carousel @open-detail="handleOpenDetail" />
 
-  </article>
+  </article> -->
 
-  <article class="DetailShadow" v-if="OpenDetail">
+  <!-- <article class="DetailShadow" v-if="OpenDetail">
     <div class="DetailResponse">
       <div class="DetailHeader">
         <div class="DetailTitle">
-          <h2>Détails pour alex@email.com</h2>
+          <h2>Détails pour {{ selectedResponse.email }} </h2>
           <br>
-          <span>Soumis le 20/06/2025</span>
+          <span>Soumis le {{ selectedResponse.date }} </span>
         </div>
         <button type="button" @click="OpenDetail = false">×</button>
       </div>
@@ -41,16 +132,16 @@ function handleOpenDetail(response) {
         <tbody>
           <tr>
             <td>(1) Votre adresse mail</td>
-            <td>alex@email.com</td>
+            <td>{{ selectedResponse.email }}</td>
           </tr>
           <tr>
             <td>(2) Votre age</td>
-            <td>23</td>
+            <td> {{ selectedResponse.date }} </td>
           </tr>
         </tbody>
       </table>
     </div>
-  </article>
+  </article> -->
 
 </section>
 </template>
@@ -163,12 +254,10 @@ function handleOpenDetail(response) {
 .ResponseContent {
   /*border: 1px solid #fff;*/
   width: 100%;
-  height:300px;
+  height:265px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 80px;
+  margin-top: 50px;
+  overflow-y: scroll;
 }
 
 .ResponseCard {
@@ -248,6 +337,78 @@ function handleOpenDetail(response) {
 
 .right-button {
   right: 8%;
+}
+
+/* Style du tableau des sondés */
+
+table {
+  width: 100%;
+  /*border: 1px solid white;*/
+  margin-top: 0px;
+  color: #b3b3b3;
+  border-collapse: collapse;
+}
+
+thead {
+  color: #00b8ff;
+  border: 1px solid #2c2c2c;
+}
+
+thead td,tbody td {
+  padding: 15px;
+  background: #2c2c2c;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+tbody td {
+  background: #1e1e1e;
+  border-bottom: 1px solid #2c2c2c;
+  font-weight: 500;
+}
+
+tbody td:nth-child(3) {
+  width: 35%;
+}
+
+/*tbody td:nth-child(2) {
+  background: #2c2c2c;
+}*/
+
+/* Pour les boutons de navigation */
+.ButtonSection {
+  /*border: 1px solid white;*/
+  width: 40%;
+  margin: 45px auto 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ButtonSection button {
+  background-color: #2c2c2c;
+  padding: 10px 10px;
+  width: 40%;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #b3b3b3;
+      transition: all 0.4s;
+    }
+
+.ButtonSection button:hover {
+  cursor: pointer;
+  background-color: #00b8ff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.ButtonSection button:disabled {
+  cursor: not-allowed;
+  background-color: #1e1e1e;
+  color: grey;
 }
 </style>
 
