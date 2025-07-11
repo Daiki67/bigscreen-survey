@@ -5,21 +5,27 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Question;
 
+// Seeder pour remplir la table questions avec les questions du sondage
 class QuestionSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Exécute le seeder pour la table questions.
+     * Rôle : Générer toutes les questions du sondage avec leurs options
+     * Paramètres : Aucun
+     * Retour : void
      */
     public function run(): void
     {
+        // Supprime toutes les questions existantes avant d'insérer les nouvelles
         Question::query()->delete();
 
+        // Tableau contenant toutes les questions à insérer
         $questions = [
             [
-                'title' => 'Question 1/20',
-                'body' => 'Votre adresse mail',
-                'type' => 'B',
-                'options' => null,
+                'title' => 'Question 1/20', // Titre de la question
+                'body' => 'Votre adresse mail', // Corps/texte de la question
+                'type' => 'B', // Type de la question
+                'options' => null, // Pas d'options pour cette question
             ],
             [
                 'title' => 'Question 2/20',
@@ -138,6 +144,7 @@ class QuestionSeeder extends Seeder
             ],
         ];
 
+        // Boucle sur chaque question pour l'insérer en base
         foreach ($questions as $q) {
             Question::create($q);
         }
