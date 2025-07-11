@@ -88,7 +88,7 @@ onMounted(fetchQuestions);
 
     <section class="LogoContainer">
       <figure>
-        <img src="" alt="">
+        <h1>bigscreen</h1>
       </figure>
       <div class="LogoContainerSpanDiv">
         <span>Merci de répondre à toutes les questions et de valider le formulaire en bas de page.</span>
@@ -126,9 +126,18 @@ onMounted(fetchQuestions);
           required
         >
         <input
-          type="text" v-if="Q.type === 'B' && Q.id !== 1"
+          type="text" v-if="Q.type === 'B' && Q.id !== 1 && Q.id !== 2"
           :name="'answer.' + Q.id"
           placeholder="Votre réponse ici ... "
+          v-model="answer[Q.id]"
+          required
+        >
+        <input
+          type="number" v-if="Q.type === 'B' && Q.id === 2"
+          min="18"
+          max="90"
+          placeholder="Votre âge ici ..."
+          :name="'answer.' + Q.id"
           v-model="answer[Q.id]"
           required
         >
@@ -173,7 +182,7 @@ onMounted(fetchQuestions);
              <br>
               Si vous désirez consulter vos réponse ultérieurement, voici votre lien unique :
           </p>
-          <button @click="openModal = false"><a :href="accessUrl">{{ accessUrl }}</a></button>
+          <button @click="openModal = false"><a :href="accessUrl">http://localhost:5173/{{ accessUrl }}</a></button>
         </div>
       </div>
     </section>
@@ -200,22 +209,25 @@ onMounted(fetchQuestions);
     /*border: 1px solid white;*/
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
-    width: 80%;
-    height: 280px;
-    text-align: center;
+    width: 97%;
+    height: 180px;
+    text-align: left;
   }
 
   .LogoContainer figure {
-    border: 1px solid green;
+    /*border: 1px solid green;*/
     width: 35%;
-    height: 80%;
+    height: 20%;
+    color: #fff;
+    font-size: 2.5rem;
   }
 
   .LogoContainerSpanDiv {
+    /*border: 1px solid white;*/
     color: #b3b3b3;
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   /*Pour le bloc des questions*/
@@ -252,6 +264,7 @@ onMounted(fetchQuestions);
   }
 
   .QuestionAnswer input[type = 'text'],
+  .QuestionAnswer input[type = 'number'],
   .QuestionAnswer input[type = 'email'] {
     width: 97%;
     padding: 12px 15px;
@@ -267,6 +280,7 @@ onMounted(fetchQuestions);
   }
 
   .QuestionAnswer input[type = 'text']:focus,
+  .QuestionAnswer input[type = 'number']:focus,
   .QuestionAnswer input[type = 'email']:focus {
     outline: none;
     border-style:double;
