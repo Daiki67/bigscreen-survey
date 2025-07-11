@@ -28,7 +28,7 @@ onMounted(fetchUserAnswer);
 
     <section class="LogoContainer">
       <figure>
-        <img src="" alt="">
+        <h1>bigscreen</h1>
       </figure>
       <div class="LogoContainerSpanDiv">
         <span>Nous vous remercions d'avoir eu à répondre à ce formulaire. Voici vos réponses.</span>
@@ -95,22 +95,25 @@ onMounted(fetchUserAnswer);
     /*border: 1px solid white;*/
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
-    width: 80%;
-    height: 280px;
-    text-align: center;
+    width: 97%;
+    height: 180px;
+    text-align: left;
   }
 
   .LogoContainer figure {
-    border: 1px solid green;
+    /*border: 1px solid green;*/
     width: 35%;
-    height: 80%;
+    height: 20%;
+    color: #fff;
+    font-size: 2.5rem;
   }
 
   .LogoContainerSpanDiv {
+    /*border: 1px solid white;*/
     color: #b3b3b3;
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   /*Pour le bloc des questions*/
