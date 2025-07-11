@@ -1,18 +1,17 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
-import { getUrlToken } from '@/utilities/utils.js';
+
+const props = defineProps(['token']);
 
 const PersonalAnswer = ref([]);
-//const RadioNumber = ref(0);
 const errorMessage = ref('');
 
 const fetchUserAnswer = async () => {
   try {
     errorMessage.value = '';
-    const response = await axios.get(`http://localhost:8000/api/survey/result/${getUrlToken()}`);
+    const response = await axios.get(`http://localhost:8000/api/survey/result/${props.token}`);
     PersonalAnswer.value = response.data.submission.answers;
-    //RadioNumber.value = PersonalAnswer.value;
     //console.log(PersonalAnswer.value);
   } catch (e) {
     console.error ('Erreur de récupération de la réponse', e);
@@ -48,8 +47,6 @@ onMounted(fetchUserAnswer);
           <div class="QuestionRadioOption">
           <input
           type="radio"
-          name="gender"
-          value="Homme"
           checked
           disabled
           >
@@ -58,45 +55,19 @@ onMounted(fetchUserAnswer);
         </div>
 
         <!-- Div contenant les input pour la réponse aux question de type C -->
-         <div class="QuestionRadioGroupSelect">
-          <div v-if="ans.question.type === 'C'" class="QuestionRadioSelect">
-          <input
-          type="radio"
-          name="number1"
-          value=1
-          :checked="RadioNumber >= 1"
-          >
-          <span></span>
-            <input
-              type="radio"
-              name="number2"
-              value=2
-              :checked="RadioNumber >= 2"
-            >
-            <span></span>
-            <input
-              type="radio"
-              name="number3"
-              value=3
-              :checked="RadioNumber >= 3"
-            >
-            <span></span>
-            <input
-              type="radio"
-              name="number4"
-              value=4
-              :checked="RadioNumber >= 4"
-            >
-            <span></span>
-            <input
-              type="radio"
-              name="number5"
-              value=5
-              :checked="RadioNumber >= 5"
-            >
-            <span></span>
+         <div v-if="ans.question.type === 'C'" class="QuestionRadioGroupSelect">
+          <div class="QuestionRadioSelect">
+            <div class="RadioSelectedDiv" v-for="n in 5" :key="n">
+              <input
+                type="radio"
+                :name="'number' + n + ans.question.id"
+                :value='n'
+                :checked="Number(ans.value) === n || Number(ans.value) >= n"
+              >
+              <span></span>
+            </div>
           </div>
-          <p>{{ RadioNumber }}</p>
+          <p>{{ Number(ans.value) }}</p>
         </div>
         <hr>
       </article>
@@ -220,6 +191,10 @@ onMounted(fetchUserAnswer);
     border-color: #00b8ff
   }
 
+  .QuestionRadioSelect {
+    display: flex;
+  }
+
   .QuestionRadioOption:hover {
     background-color: #2c2c2c;
     transition: 0.3s;
@@ -274,8 +249,7 @@ onMounted(fetchUserAnswer);
     background-color: #2c2c2c;
   }
 
-  .QuestionRadioOption span::after,
-  .QuestionRadioSelect span::after {
+  .QuestionRadioOption span::after {
     content: '';
     position: absolute;
     left: 6px;
@@ -286,13 +260,13 @@ onMounted(fetchUserAnswer);
     border-radius:50%;
   }
 
-  .QuestionRadioSelect span::after {
+  /*.QuestionRadioSelect span::after {
     left: 0;
     top: 0;
     width: 23px;
     height: 23px;
     background-color: red;
-  }
+  }*/
 
   .QuestionRadioOption input[type = 'radio']:checked + span::after,
   .QuestionRadioSelect input[type = 'radio']:checked + span::after {
@@ -314,4 +288,8 @@ onMounted(fetchUserAnswer);
     width: 23px;
     height: 23px;
   }
+
+  /*.RadioSelectedDiv {
+    display: flex;
+  }*/
 </style>
