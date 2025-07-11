@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use App\Http\Resources\UserResource;
-use Illuminate\Http\Resources\Json\JsonResource;
 
+// Contrôleur pour la gestion de l'authentification des utilisateurs
 class AuthController extends Controller
 {
+    /*
+     * Méthode register (commentée)
+     * Rôle : Inscrire un nouvel utilisateur dans la base de données
+     * Paramètres :
+     *   - Request $request : la requête HTTP contenant les informations d'inscription
+     * Retour : JsonResponse avec le nouvel utilisateur et le token d'accès
+     */
     /* public function register(Request $request)
     {
         $request->validate([
@@ -44,22 +48,33 @@ class AuthController extends Controller
         }
     } */
 
+    /**
+     * Méthode login
+     * Rôle : Authentifier un utilisateur avec email et mot de passe, et générer un token d'accès
+     * Paramètres :
+     *   - Request $request : la requête HTTP contenant les identifiants de connexion
+     * Retour : JsonResponse avec l'utilisateur, le token d'accès, ou un message d'erreur
+     */
     public function login(Request $request)
     {
+        /* Validation des données envoyées dans la requête via la validation de laravel */
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
+        /* Message d'erreur envoyé si les informations envoyées dans la requête ne correspondent pas */
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
+        /* Récupération de l'utilisateur connecté et création de token (admin) */
         $user = $request->user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        /* Vérification si l'utilisateur et le token ont été créés avec succès */
         if ($user && $token) {
             return response()->json([
                 'message' => 'User logged in successfully',
@@ -74,6 +89,13 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Méthode logout
+     * Rôle : Déconnecter l'utilisateur en supprimant le token d'accès courant
+     * Paramètres :
+     *   - Request $request : la requête HTTP contenant l'utilisateur authentifié
+     * Retour : JsonResponse avec un message de succès ou d'erreur
+     */
     public function logout(Request $request)
     {
         // Récupère l'utilisateur authentifié via le token
@@ -89,6 +111,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Aucun utilisateur authentifié ou token valide.'], 401);
     }
 
+    /**
+     * Méthode AuthAdmin
+     * Rôle : Vérifier si un administrateur est authentifié
+     * Paramètres : Aucun
+     * Retour : JsonResponse indiquant si l'utilisateur est authentifié ou non
+     */
     public function AuthAdmin() {
         if(Auth::check()){
             return response()->json([
@@ -97,8 +125,5 @@ class AuthController extends Controller
         }
 
         return response()->json(['authenticated' => false]);
-
     }
-    
-
 }

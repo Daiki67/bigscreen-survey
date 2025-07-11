@@ -7,17 +7,18 @@ use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Submission;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Http\Resources\QuestionResource;
 use App\Http\Resources\SubmissionResource;
 
+// Contrôleur pour la gestion du sondage (questions, réponses, soumissions)
 class SurveyController extends Controller
 {
     /**
-     * Affiche toutes les questions du sondage.
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * Méthode index
+     * Rôle : Affiche toutes les questions du sondage
+     * Paramètres : Aucun
+     * Retour : AnonymousResourceCollection contenant toutes les questions sous forme de ressources
      */
     public function index()
     {
@@ -29,28 +30,17 @@ class SurveyController extends Controller
     }
 
     /**
-     * Valide et enregistre les réponses du sondage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * Méthode store
+     * Rôle : Valide et enregistre les réponses du sondage
+     * Paramètres :
+     *   - Request $request : la requête HTTP contenant les réponses de l'utilisateur
+     * Retour : JsonResponse avec le message, le token unique et les réponses enregistrées
      */
     public function store(Request $request)
     {
         $rules = [];
-        //Recupération de toutes les questions
+        // Récupération de toutes les questions
         $questions = Question::all();
-
-        // Vérification que l'utilisateur a répondu à toutes les questions
-        /* if (!$questions) {
-            return response()->json([
-                'message' => 'Aucune question trouvée.',
-            ], 404);
-        }
-        else {
-            return response()->json([
-                'message' => 'Questions trouvées avec succès.',
-            ]);
-        } */
 
         foreach ($questions as $question) {
             $rule = 'required';
@@ -89,14 +79,14 @@ class SurveyController extends Controller
             'urlToken' => $submission->url_token,
             'data' => $answers,
         ],201);
-
     }
 
     /**
-     * Affiche les réponses d'un utilisateur via son jeton unique.
-     *
-     * @param  string  $token
-     * @return \App\Http\Resources\SubmissionResource|\Illuminate\Http\JsonResponse
+     * Méthode showResults
+     * Rôle : Affiche les réponses d'un utilisateur via son jeton unique
+     * Paramètres :
+     *   - string $token : le jeton unique de la soumission
+     * Retour : JsonResponse avec la ressource de soumission complète ou un message d'erreur
      */
     public function showResults(string $token)
     {

@@ -7,12 +7,14 @@ use App\Models\Question;
 use App\Http\Resources\QuestionResource; // N'oubliez pas d'importer votre ressource
 use Illuminate\Http\JsonResponse;
 
+// Contrôleur pour la gestion des questions du sondage
 class QuestionController extends Controller
 {
     /**
-     * Affiche la liste de toutes les questions du sondage.
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * Méthode index
+     * Rôle : Affiche la liste de toutes les questions du sondage
+     * Paramètres : Aucun
+     * Retour : AnonymousResourceCollection contenant toutes les questions sous forme de ressources
      */
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
@@ -26,12 +28,12 @@ class QuestionController extends Controller
     // Vous pouvez ajouter d'autres méthodes CRUD ici si vous en avez besoin pour l'admin :
     // show(Question $question), store(Request $request), update(Request $request, Question $question), destroy(Question $question)
 
-    // Exemple de méthode show pour une question spécifique
     /**
-     * Affiche une question spécifique.
-     *
-     * @param  \App\Models\Question  $question
-     * @return \App\Http\Resources\QuestionResource|\Illuminate\Http\JsonResponse
+     * Méthode show
+     * Rôle : Affiche une question spécifique
+     * Paramètres :
+     *   - Question $question : l'instance de la question à afficher
+     * Retour : QuestionResource ou JsonResponse avec la question demandée
      */
     public function show(Question $question): QuestionResource|JsonResponse
     {
