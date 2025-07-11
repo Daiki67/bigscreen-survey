@@ -1,10 +1,11 @@
 <script setup>
 import AnswerForm from '@/components/AnswerForm.vue';
+const props = defineProps(['token']);
 </script>
 
 <template>
 <div class="Answerbody">
-  <AnswerForm />
+  <AnswerForm :token="props.token" />
 </div>
 </template>
 
