@@ -57,6 +57,10 @@ Commandes utilisées lors du développement:
 - php artisan db:seed --class=AnswerSeeder
 - npm install axios
 - npm install apexcharts vue3cd-apexcharts --save
+- composer require darkaonline/l5-swagger
+- php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+- php artisan l5-swagger:generate   (/api/documentation)
+- 
 
 Resources utilisées lors du développement:
 
