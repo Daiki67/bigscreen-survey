@@ -8,42 +8,57 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+// Modèle Eloquent pour la table 'users'
+// Représente un utilisateur de l'application (admin ou simple utilisateur)
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs pouvant être assignés en masse.
+     *
+     * Champs :
+     *   - name (string)     : Nom de l'utilisateur
+     *   - email (string)    : Adresse email de l'utilisateur
+     *   - password (string) : Mot de passe de l'utilisateur (hashé)
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'name',     // string : nom de l'utilisateur
+        'email',    // string : email de l'utilisateur
+        'password', // string : mot de passe (hashé)
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Les attributs à masquer lors de la sérialisation.
+     *
+     * Champs :
+     *   - password (string)        : Mot de passe (jamais exposé)
+     *   - remember_token (string)  : Jeton de session (jamais exposé)
      *
      * @var list<string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password',        // string : mot de passe
+        'remember_token',  // string : jeton de session
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Les attributs à caster automatiquement.
+     *
+     * Champs :
+     *   - email_verified_at (datetime) : Date de vérification de l'email
+     *   - password (hashed)           : Mot de passe hashé
      *
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at' => 'datetime', // date de vérification de l'email
+            'password' => 'hashed',           // mot de passe hashé
         ];
     }
 }
