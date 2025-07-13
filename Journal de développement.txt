@@ -60,7 +60,10 @@ Commandes utilisées lors du développement:
 - composer require darkaonline/l5-swagger
 - php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
 - php artisan l5-swagger:generate   (/api/documentation)
-- 
+- npm uninstall @storybook/vue @storybook/addons @storybook/addon-actions @storybook/addon-links @storybook/addon-essentials
+- npm install -g @vuedoc/parser @vuedoc/md
+- node generate-docs.js (Génération de la documentation de vuedoc)
+
 
 Resources utilisées lors du développement:
 
