@@ -20,7 +20,10 @@ Jour 17: Fixation concernant l'affichage des réponses utilisateurs côté front
 Jour 18: Affichage dynamique des questions et des inputs & récupérations des données du formulaire entrées par l'utilisateur
 Jour 19: Récupération des données entrées par l'utilisateur & envoie vers la base de données via l'api ainsi que la configuration du props pour la construction du lien dynamique de la réponse utilisateur
 Jour 20: Work In Progress: Affichage dynamique du sondé via le lien contenant l'UrlToken
-Jour 21:
+Jour 21: Restructuration du cahier de charges et suppression des dépendances non utilis comme storybook
+Jour 22: Rédaction de la documentation du frontend et du backend dans des fichiers .txt à la racine de chaque dossier
+Jour 23: Mise à niveau du site au format responsive
+Jour 24: Ajout des commentaires pour chaque fichier de l'interface frontend
 
 Commandes utilisées lors du développement:
 
@@ -63,6 +66,11 @@ Commandes utilisées lors du développement:
 - npm uninstall @storybook/vue @storybook/addons @storybook/addon-actions @storybook/addon-links @storybook/addon-essentials
 - npm install -g @vuedoc/parser @vuedoc/md
 - node generate-docs.js (Génération de la documentation de vuedoc)
+- npx vuedoc.md src/views/
+- npx storybook@latest init (Installation de storybook)
+- npm install --save-dev @storybook/vue3-vite @storybook/addon-docs @storybook/addon-onboarding @storybook/addon-a11y @storybook/addon-vitest @chromatic-com/storybook
+- 
+
 
 
 Resources utilisées lors du développement:
