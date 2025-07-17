@@ -1,13 +1,48 @@
-<script setup>
-import { RouterLink } from 'vue-router';
-import axios from '@/utilities/axios.js';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { getAccessToken, removeAccessToken } from '@/utilities/utils.js';
+<!-- ----------------------------------------------------------------------------- -->
+<!-- Composant : Sidebar -->
+<!-- ----------------------------------------------------------------------------- -->
+<!-- Type : Structurel (barre latérale de navigation pour l'administration) -->
 
+<!-- Librairies tierces utilisées : -->
+<!-- - vue-router : -->
+<!--     - RouterLink : composant pour la navigation sans rechargement de page -->
+<!--     - useRouter : hook pour navigation programmatique -->
+<!--     - $route : objet global pour accéder à la route courante -->
+<!-- - axios : instance personnalisée pour les requêtes HTTP (logout) -->
+<!-- - @/utilities/utils.js : -->
+<!--     - getAccessToken : fonction pour récupérer le token d'accès -->
+<!--     - removeAccessToken : fonction pour supprimer le token d'accès -->
+
+<!-- État local : -->
+<!-- - errorMessage (ref<string>) : message d'erreur affiché lors d'un échec de déconnexion -->
+<!-- - router (useRouter) : instance du routeur pour navigation programmatique -->
+
+<!-- Méthodes : -->
+<!-- - handleLogout (async) : -->
+<!--     - Déclenche la déconnexion de l'administrateur -->
+<!--     - Appelle l'API /admin/logout -->
+<!--     - Supprime le token localement -->
+<!--     - Redirige vers la page d'administration -->
+<!-- ----------------------------------------------------------------------------->
+
+<script setup>
+// Importation des librairies tierces et utilitaires
+import { RouterLink } from 'vue-router'; // Composant de navigation (vue-router)
+import axios from '@/utilities/axios.js'; // Instance Axios personnalisée
+import { ref } from 'vue'; // API de réactivité (Vue 3)
+import { useRouter } from 'vue-router'; // Hook pour navigation programmatique (vue-router)
+import { getAccessToken, removeAccessToken } from '@/utilities/utils.js'; // Fonctions utilitaires pour le token
+
+// errorMessage : ref<string> - message d'erreur pour la déconnexion
 const errorMessage = ref('');
+// router : instance du routeur pour navigation programmatique
 const router = useRouter();
 
+// handleLogout : Fonction asynchrone pour déconnecter l'utilisateur
+// - Appelle l'API de logout
+// - Supprime le token d'accès
+// - Redirige vers la page d'administration
+// - Affiche un message d'erreur en cas d'échec
 const handleLogout = async () => {
   try {
     errorMessage.value = '';
@@ -30,37 +65,91 @@ const handleLogout = async () => {
 </script>
 
 <template>
-<div class="SidebarContainer">
-  <div class="SidebarDivLogo">
-    <div>
-      <h2>bigscreen</h2>
+  <!-- SidebarContainer : conteneur principal de la barre latérale -->
+  <div class="SidebarContainer">
+    <!-- SidebarDivLogo : zone d'affichage du logo -->
+    <div class="SidebarDivLogo">
+      <div>
+        <h2>bigscreen</h2>
+      </div>
+    </div>
+    <!-- SidebarItems : liste des boutons de navigation -->
+    <div class="SidebarItems">
+      <hr>
+      <!--
+        Composant : RouterLink (Accueil)
+        - Type : Lien de navigation
+        - Props :
+          - to : String - '/administration/dashboard' (chemin de destination)
+          - class : String - 'router-link' (classe CSS)
+        - Contenu :
+          - Button
+            - Nom : Acceuil
+            - Type : bouton de navigation
+            - Paramètres : active si $route.name === 'Dashboard'
+            - Rôle : Accéder au tableau de bord admin
+      -->
+      <router-link to="/administration/dashboard" class="router-link">
+        <button type="button" :class="{ 'active' : $route.name === 'Dashboard' }">
+            Acceuil
+        </button>
+      </router-link>
+      <!--
+        Composant : RouterLink (Questionnaire)
+        - Type : Lien de navigation
+        - Props :
+          - to : String - '/administration/quiz'
+          - class : String - 'router-link'
+        - Contenu :
+          - Button
+            - Nom : Questionnaire
+            - Type : bouton de navigation
+            - Paramètres : active si $route.name === 'Quiz'
+            - Rôle : Accéder à la gestion des questionnaires
+      -->
+      <router-link to="/administration/quiz" class="router-link">
+        <button type="button" :class="{ 'active' : $route.name === 'Quiz' }">
+          Questionnaire
+        </button>
+      </router-link>
+      <!--
+        Composant : RouterLink (Réponses)
+        - Type : Lien de navigation
+        - Props :
+          - to : String - '/administration/response'
+          - class : String - 'router-link'
+        - Contenu :
+          - Button
+            - Nom : Réponses
+            - Type : bouton de navigation
+            - Paramètres : active si $route.name === 'Response'
+            - Rôle : Accéder à la gestion des réponses
+      -->
+      <router-link to="/administration/response" class="router-link">
+        <button type="button" :class="{ 'active' : $route.name === 'Response' }">
+          Réponses
+        </button>
+      </router-link>
+      <!--
+        Composant : RouterLink (Logout)
+        - Type : Lien d'action
+        - Props :
+          - to : String - '#'
+          - class : String - 'router-link'
+          - @click : Fonction - handleLogout (déclenche la déconnexion)
+        - Contenu :
+          - Button
+            - Nom : Logout
+            - Type : bouton d'action
+            - Rôle : Déconnecter l'administrateur
+      -->
+      <router-link to="#" class="router-link" @click="handleLogout">
+        <button type="button">
+          Logout
+        </button>
+      </router-link>
     </div>
   </div>
-  <div class="SidebarItems">
-    <hr>
-    <router-link to="/administration/dashboard" class="router-link">
-      <!-- Définition de la classe active réactive lorsque le nom de la route correspond à la sélection  -->
-      <button type="button" :class="{ 'active' : $route.name === 'Dashboard' }">
-          Acceuil
-      </button>
-    </router-link>
-    <router-link to="/administration/quiz" class="router-link">
-      <button type="button" :class="{ 'active' : $route.name === 'Quiz' }">
-        Questionnaire
-      </button>
-    </router-link>
-    <router-link to="/administration/response" class="router-link">
-      <button type="button" :class="{ 'active' : $route.name === 'Response' }">
-        Réponses
-      </button>
-    </router-link>
-    <router-link to="#" class="router-link" @click="handleLogout">
-      <button type="button">
-        Logout
-      </button>
-    </router-link>
-  </div>
-</div>
 </template>
 
 <style scoped>

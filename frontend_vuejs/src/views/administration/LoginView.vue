@@ -1,46 +1,93 @@
 <script setup>
-import axios from '@/utilities/axios.js';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { setAccessToken } from '@/utilities/utils.js';
+// -----------------------------------------------------------------------------
+// Composant : LoginView
+// Type : Vue 3 (Composition API, <script setup>)
+// Rôle : Affiche la page de connexion administrateur et gère l’authentification.
+// Librairies tierces utilisées :
+//   - axios (import '@/utilities/axios.js') : client HTTP personnalisé pour requêtes AJAX
+//   - vue (import { ref } from 'vue') : framework réactif, gestion de la réactivité
+//   - vue-router (import { useRouter } from 'vue-router') : navigation SPA
+//   - @/utilities/utils.js (import { setAccessToken }) : stockage du token d’accès
+// -----------------------------------------------------------------------------
 
+// Import de l'instance Axios personnalisée pour les requêtes HTTP (librairie tierce : axios)
+import axios from '@/utilities/axios.js'; // Type : AxiosInstance
+// Import de la fonction ref de Vue pour la réactivité (librairie tierce : vue)
+import { ref } from 'vue'; // Type : (valeur initiale: any) => Ref<any>
+// Import du composable useRouter pour la navigation (librairie tierce : vue-router)
+import { useRouter } from 'vue-router'; // Type : () => Router
+// Import de la fonction utilitaire pour stocker le token d'accès
+import { setAccessToken } from '@/utilities/utils.js'; // Type : (token: string) => void
+
+// -----------------------------------------------------------------------------
+// Variables réactives locales
+// -----------------------------------------------------------------------------
+// errorMessage : Ref<string> - Message d’erreur affiché en cas d’échec de connexion
 const errorMessage = ref('');
+// email : Ref<string> - Email saisi par l’administrateur
 const email = ref('');
+// password : Ref<string> - Mot de passe saisi par l’administrateur
 const password = ref('');
 
+// -----------------------------------------------------------------------------
+// Navigation
+// -----------------------------------------------------------------------------
+// router : Router - Instance du routeur Vue pour la redirection
 const router = useRouter();
 
+// -----------------------------------------------------------------------------
+// Méthodes
+// -----------------------------------------------------------------------------
+/**
+ * Fonction de gestion de la connexion administrateur
+ * @param {Event} e - L'événement de soumission du formulaire
+ * Utilise :
+ *   - axios.post(url, data) : envoie la requête de connexion
+ *   - setAccessToken(token) : stocke le token d'accès
+ *   - router.push(path) : redirige vers la page admin
+ */
 async function handlelogin(e) {
   e.preventDefault();
   try {
     errorMessage.value = '';
+    // Envoie la requête de connexion à l'API
     const response = await axios.post('/login', {
-      email: email.value,
-      password: password.value
+      email: email.value, // string
+      password: password.value // string
     });
-    //console.log(response.data);
-    setAccessToken(response.data.access_token);
-    router.push('/admin')
+    // Stocke le token d'accès dans le localStorage
+    setAccessToken(response.data.access_token); // string
+    // Redirige vers la page d'administration
+    router.push('/admin'); // string
   } catch (e) {
     console.error('Message', e);
     errorMessage.value = 'Erreur survenue lors de la connexion administrateur';
     alert(errorMessage.value);
   }
-};
+}
+// -----------------------------------------------------------------------------
+
 </script>
 
 <template>
+<!-- -------------------------------------------------------------------------- -->
+<!-- Section principale de la page de connexion -->
+<!-- -------------------------------------------------------------------------- -->
 <section class="Login" @submit="handlelogin">
   <div class="LoginBlock">
     <div class="DivTitle">
       <h2>bigscreen</h2>
     </div>
     <form action="">
+        <!-- Champ email administrateur (lié à la variable réactive email: Ref<string>) -->
         <input type="email" v-model="email" placeholder="Entrer votre mail administrateur" required>
+        <!-- Champ mot de passe administrateur (lié à la variable réactive password: Ref<string>) -->
         <input type="password" v-model="password" placeholder="Entrer votre mot de passe" required>
+        <!-- Bouton de soumission du formulaire -->
         <button type="submit"> Se connecter </button>
     </form>
   </div>
+  <!-- Effets visuels décoratifs (éléments animés) -->
   <div id="Bounce1"></div>
   <div id="Bounce2"></div>
   <div id="Bounce3"></div>
@@ -49,6 +96,14 @@ async function handlelogin(e) {
 </template>
 
 <style scoped>
+/* -----------------------------------------------------------------------------
+ * Composant : LoginView
+ * Rôle : Affiche la page de connexion administrateur
+ * Librairies tierces utilisées :
+ *   - axios : client HTTP pour les requêtes AJAX
+ *   - vue : framework réactif (ref)
+ *   - vue-router : gestion de la navigation (useRouter)
+ * --------------------------------------------------------------------------- */
 .Login {
   position: relative;
   width: 100%;
@@ -186,5 +241,4 @@ form button:hover {
     transform: translate(0, 0) scale(1); opacity: 0.8 ;
   }
 }
-
 </style>

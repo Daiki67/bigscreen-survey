@@ -1,18 +1,58 @@
 <script setup>
-import axios from '@/utilities/axios.js';
-import { onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { getUrlToken } from '@/utilities/utils.js' ;
+// -----------------------------------------------------------------------------
+// Composant : SurveyForm
+// Type : Vue 3 - Composant de formulaire (Composition API, <script setup>)
+// Rôle : Affiche le formulaire de sondage, gère la récupération des questions,
+//        la validation des réponses et la soumission du formulaire.
+// Librairies tierces utilisées :
+//   - axios (import '@/utilities/axios.js')
+//       Type : AxiosInstance
+//       Usage : Requêtes HTTP pour récupérer et envoyer les données du sondage
+//   - vue (import { onMounted, ref, watch } from 'vue')
+//       Type : Framework réactif
+//       Usage :
+//         - ref : création de variables réactives
+//         - onMounted : hook d’exécution au montage du composant
+//         - watch : surveillance de variables réactives
+//   - vue-router (import { useRouter } from 'vue-router')
+//       Type : Gestionnaire de navigation SPA
+//       Usage : useRouter pour la navigation et la génération d’URL
+// -----------------------------------------------------------------------------
 
+// Import de l’instance Axios personnalisée pour les requêtes HTTP
+import axios from '@/utilities/axios.js'; // Type : AxiosInstance
+// Import des fonctions de Vue pour la réactivité et les hooks
+import { onMounted, ref, watch } from 'vue'; // ref<T>, onMounted(fn), watch(source, cb)
+// Import du composable useRouter pour la navigation
+import { useRouter } from 'vue-router'; // Type : () => Router
+
+// -----------------------------------------------------------------------------
+// État local (variables réactives)
+// -----------------------------------------------------------------------------
+// openModal : Ref<boolean> - Affiche ou masque la modal de confirmation
 const openModal = ref(false);
+// errorMessage : Ref<string> - Message d’erreur affiché à l’utilisateur
 const errorMessage = ref('');
+// Questions : Ref<Array> - Liste des questions du sondage
 const Questions = ref([]);
+// answer : Ref<Object> - Réponses de l’utilisateur, indexées par id de question
 const answer = ref({});
+// UrlToken : Ref<string|null> - Token d’accès généré après soumission
 const UrlToken = ref(null);
+// accessUrl : Ref<string|null> - URL d’accès générée pour consulter les réponses
 const accessUrl = ref(null);
+// router : Router - Instance du routeur Vue pour la navigation
 const router = useRouter();
 
-
+// -----------------------------------------------------------------------------
+// Méthodes principales
+// -----------------------------------------------------------------------------
+/**
+ * fetchQuestions
+ * Type : Fonction asynchrone
+ * Rôle : Récupère la liste des questions du sondage via l’API
+ * Utilise : axios.get('/survey/question')
+ */
 const fetchQuestions = async () => {
   try {
     errorMessage.value = '';
@@ -26,44 +66,56 @@ const fetchQuestions = async () => {
   }
 }
 
-//Vérification de la validation de tous les champs
+/**
+ * validateAnswers
+ * Type : Fonction
+ * Rôle : Vérifie que toutes les questions ont une réponse
+ * Retour : boolean (true si toutes les réponses sont présentes)
+ */
 const validateAnswers = () => {
-  //Boucle sur les 20 questions afin d'identifier un champ manquant
-  for (let q of Questions.value) {
+  // Boucle sur les questions pour identifier un champ manquant
+  for (const q of Questions.value) {
     if (!answer.value[q.id]) {
-      errorMessage = 'Merci de répondre à toutes les questions';
+      errorMessage.value = 'Merci de répondre à toutes les questions';
       return false
     }
   }
-  errorMessage = '';
+  errorMessage.value = '';
   return true
 };
 
+// -----------------------------------------------------------------------------
+// Surveillance du token d’accès pour générer l’URL de consultation
+// -----------------------------------------------------------------------------
 watch(UrlToken, (newToken) => {
-
   if (newToken) {
-
-    //Utilise le routeur VueJs pour générer l'URL
+    // Utilise le routeur VueJs pour générer l’URL
     accessUrl.value = router.resolve({
       name: 'answer',
       params: { token: newToken }
     }).href;
-
-  }else {
+  } else {
     accessUrl.value = null;
   }
-
   return {
     UrlToken,
     accessUrl
   }
-
 })
 
+/**
+ * SurveySubmitted
+ * Type : Fonction asynchrone
+ * Rôle : Soumet les réponses du formulaire à l’API
+ * Paramètres :
+ *   - e : Event - Événement de soumission du formulaire
+ * Utilise :
+ *   - axios.post('/survey/store', { answer })
+ *   - Affiche la modal de confirmation en cas de succès
+ */
 const SurveySubmitted = async(e) => {
   e.preventDefault();
   if (!validateAnswers) return;
-
   try {
     errorMessage.value = '';
     const response = await axios.post('/survey/store', {
@@ -76,16 +128,35 @@ const SurveySubmitted = async(e) => {
     errorMessage.value = 'Erreur survenue lors de la sauvegarde des réponses du formulaire';
     alert(errorMessage.value);
   }
-
 };
 
+// -----------------------------------------------------------------------------
+// Hook d’exécution au montage du composant
+// -----------------------------------------------------------------------------
 onMounted(fetchQuestions);
-
 </script>
 
 <template>
+  <!-- -------------------------------------------------------------------------- -->
+  <!-- Composant : SurveyForm                                                    -->
+  <!-- Type : Composant Vue 3 (formulaire)                                       -->
+  <!-- Rôle : Affiche le formulaire de sondage, gère la saisie et la soumission  -->
+  <!-- Méthode principale : SurveySubmitted (soumission du formulaire)           -->
+  <!-- État local : openModal, errorMessage, Questions, answer, UrlToken, accessUrl -->
+  <!-- Librairies tierces utilisées :                                            -->
+  <!--   - axios : requêtes HTTP                                                 -->
+  <!--   - vue : ref, onMounted, watch                                           -->
+  <!--   - vue-router : useRouter                                                -->
+  <!-- -------------------------------------------------------------------------- -->
   <form @submit="SurveySubmitted">
 
+    <!--
+      Section : LogoContainer
+      - Type : Section de présentation
+      - Contenu :
+        - figure : Affiche le logo principal (texte "bigscreen")
+        - LogoContainerSpanDiv : Message d’introduction
+    -->
     <section class="LogoContainer">
       <figure>
         <h1>bigscreen</h1>
@@ -95,16 +166,48 @@ onMounted(fetchQuestions);
       </div>
     </section>
 
+    <!--
+      Section : QuestionContainer
+      - Type : Section principale
+      - Rôle : Affiche la liste des questions du sondage
+      - Source : Questions (Array)
+      - Pour chaque question (Q) :
+        - Q.id : identifiant unique (Number)
+        - Q.title : titre de la question (String)
+        - Q.body : texte de la question (String)
+        - Q.type : type de question ('A', 'B', 'C')
+        - Q.options : options de réponse (Array, si applicable)
+    -->
     <section class="QuestionContainer">
-
+      <!-- Pour chaque question (Q) de Questions -->
       <article class="QuestionAnswer" v-for="Q in Questions" :key="Q.id">
+        <!-- Titre de la question (Q.title : String) -->
         <div class="QuestionNumber"> {{ Q.title }} </div>
+        <!-- Corps/texte de la question (Q.body : String) -->
         <div class="QuestionBody"> {{ Q.body }} </div>
 
+        <!--
+          Groupe de boutons radio (type A)
+          - Q.type === 'A'
+          - Q.options : Array d’options (String)
+          - answer[Q.id] : valeur sélectionnée (String)
+        -->
         <div class="QuestionRadioGroup" v-if="Q.type === 'A'">
+          <!-- Pour chaque option (item) de Q.options (Array<String>) -->
           <div class="QuestionRadioOption" v-for="(item, index) in Q.options" :key="index"
             @click="answer[Q.id] = item"
           >
+            <!--
+              Composant : input (radio)
+              - Type : Champ de sélection unique
+              - Props :
+                - type : 'radio'
+                - name : String - Nom unique par question (ex: 'answer.1')
+                - value : String - Valeur de l’option
+                - v-model : Liaison bidirectionnelle avec answer[Q.id]
+                - checked : Boolean - État sélectionné
+                - required : Champ obligatoire
+            -->
             <input
               type="radio"
               :name="'answer.'+ Q.id"
@@ -115,9 +218,19 @@ onMounted(fetchQuestions);
             >
             <span> {{ item }} </span>
           </div>
-          <!-- <p>{{ answer[Q.id] }}</p> -->
         </div>
 
+        <!--
+          Composant : input (email)
+          - Type : Champ de saisie email
+          - Props :
+            - type : 'email'
+            - v-if : Q.type === 'B' && Q.id === 1
+            - name : String - Nom unique par question
+            - placeholder : String
+            - v-model : Liaison avec answer[Q.id]
+            - required : Champ obligatoire
+        -->
         <input
           type="email" v-if="Q.type === 'B' && Q.id === 1"
           :name="'answer.' + Q.id"
@@ -125,6 +238,17 @@ onMounted(fetchQuestions);
           v-model="answer[Q.id]"
           required
         >
+        <!--
+          Composant : input (text)
+          - Type : Champ de saisie texte
+          - Props :
+            - type : 'text'
+            - v-if : Q.type === 'B' && Q.id !== 1 && Q.id !== 2
+            - name : String
+            - placeholder : String
+            - v-model : Liaison avec answer[Q.id]
+            - required : Champ obligatoire
+        -->
         <input
           type="text" v-if="Q.type === 'B' && Q.id !== 1 && Q.id !== 2"
           :name="'answer.' + Q.id"
@@ -132,6 +256,19 @@ onMounted(fetchQuestions);
           v-model="answer[Q.id]"
           required
         >
+        <!--
+          Composant : input (number)
+          - Type : Champ de saisie numérique
+          - Props :
+            - type : 'number'
+            - v-if : Q.type === 'B' && Q.id === 2
+            - min : 18
+            - max : 90
+            - placeholder : String
+            - name : String
+            - v-model : Liaison avec answer[Q.id]
+            - required : Champ obligatoire
+        -->
         <input
           type="number" v-if="Q.type === 'B' && Q.id === 2"
           min="18"
@@ -142,14 +279,30 @@ onMounted(fetchQuestions);
           required
         >
 
+        <!--
+          Groupe de sélection radio (type C)
+          - Q.type === 'C'
+          - Q.options : Array d’options (Number)
+          - answer[Q.id] : valeur sélectionnée (Number)
+        -->
         <div class="QuestionRadioGroupSelect" v-if="Q.type === 'C'">
           <div class="QuestionRadioSelect">
+            <!-- Pour chaque option (n) de Q.options (Array<Number>) -->
             <div
               class="RadioCheckedDiv"
               v-for="n in Q.options"
               :key="n"
               :class="{ ischecked : answer[Q.id] >= n }"
             >
+              <!--
+                Composant : input (radio)
+                - Type : Champ de sélection unique
+                - Props :
+                  - type : 'radio'
+                  - name : String - Nom unique par question
+                  - value : Number
+                  - v-model : Liaison avec answer[Q.id]
+              -->
               <input
                 type="radio"
                 :name="'answer.'+ Q.id"
@@ -167,10 +320,26 @@ onMounted(fetchQuestions);
 
     </section>
 
+    <!--
+      Section : SubmitButtonSection
+      - Type : Section de soumission
+      - Contenu :
+        - button : Bouton de soumission du formulaire
+    -->
     <section class="SubmitButtonSection">
       <button type="submit">Finaliser</button>
     </section>
 
+    <!--
+      Section : Modal de confirmation
+      - Type : Section affichée conditionnellement (openModal)
+      - Contenu :
+        - modal-overlay : Fond semi-transparent
+        - modal-content : Contenu de la modal
+          - h1 : Titre de remerciement
+          - p : Message de confirmation et lien d’accès
+          - button : Bouton de fermeture et lien vers l’URL d’accès
+    -->
     <section>
       <div v-if="openModal" class="modal-overlay">
         <div class="modal-content">

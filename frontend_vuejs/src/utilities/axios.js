@@ -1,18 +1,29 @@
+// Import de la librairie axios (client HTTP pour effectuer des requêtes AJAX)
 import axios from 'axios'
+// Import de la fonction utilitaire pour récupérer le token d'accès
 import { getAccessToken } from './utils.js'
 
+// Variable globale pour stocker la fonction de gestion du loader
 let setLoading = null;
 
+/**
+ * Définit la fonction globale pour activer/désactiver le loader
+ * @param {function} fn - Fonction qui prend un booléen (true/false) pour afficher ou masquer le loader
+ */
 export function setGlobalLoadingSetter(fn) {
   setLoading = fn
 }
 
-// Création d'une instance Axios
+// Création d'une instance Axios personnalisée
+// Nom : instance
+// Type : AxiosInstance
+// Paramètres :
+//   - baseURL : string (URL de base de l'API)
 const instance = axios.create({
   baseURL: 'http://localhost:8000/api', // récupère la base de l'Url
 })
 
-// Intercepteur pour afficher le loader avant chaque requête
+// Intercepteur de requête : affiche le loader avant chaque requête
 instance.interceptors.request.use(
   config => {
     if (setLoading) setLoading(true)
@@ -24,7 +35,7 @@ instance.interceptors.request.use(
   }
 )
 
-// Intercepteur pour masquer le loader après chaque réponse
+// Intercepteur de réponse : masque le loader après chaque réponse
 instance.interceptors.response.use(
   response => {
     if (setLoading) setLoading(false)
@@ -36,4 +47,12 @@ instance.interceptors.response.use(
   }
 )
 
+// Exporte l'instance Axios personnalisée pour l'utiliser dans toute l'application
 export default instance
+
+/*
+ * Librairies tierces utilisées :
+ * - axios : client HTTP pour effectuer des requêtes AJAX (https://github.com/axios/axios)
+ *   - axios.create({ baseURL }) : crée une instance personnalisée avec une URL de base
+ *   - instance.interceptors.request/response : permet d'intercepter et de modifier les requêtes/réponses globalement
+ */

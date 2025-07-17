@@ -24,8 +24,24 @@ onMounted(fetchUserAnswer);
 </script>
 
 <template>
+  <!-- -------------------------------------------------------------------------- -->
+  <!-- Composant : AnswerForm                                                    -->
+  <!-- Type : Composant Vue 3 (formulaire de consultation)                       -->
+  <!-- Rôle : Affiche les réponses d’un utilisateur à un sondage                 -->
+  <!-- Props :
+         - token : String - Token d’accès unique (récupéré via defineProps)
+  -->
+  <!-- État local :
+         - PersonalAnswer : Array<Object> - Réponses de l’utilisateur
+         - errorMessage : String - Message d’erreur
+  -->
+  <!-- Librairies tierces utilisées :
+         - axios : requêtes HTTP (récupération des réponses)
+         - vue : ref, onMounted
+  -->
+  <!-- -------------------------------------------------------------------------- -->
   <form>
-
+    <!-- Section : LogoContainer (présentation du logo et du message d’intro) -->
     <section class="LogoContainer">
       <figure>
         <h1>bigscreen</h1>
@@ -35,29 +51,68 @@ onMounted(fetchUserAnswer);
       </div>
     </section>
 
+    <!-- Section : QuestionContainer (liste des réponses) -->
     <section class="QuestionContainer">
-
+      <!-- Pour chaque réponse (ans) de PersonalAnswer -->
       <article class="QuestionAnswer" v-for="ans in PersonalAnswer" :key="ans.id">
+        <!-- Titre de la question -->
         <div class="QuestionNumber"> {{ ans.question.title }} </div>
+        <!-- Corps/texte de la question -->
         <div class="QuestionBody"> {{ ans.question.body }} </div>
+
+        <!--
+          Composant : input (text)
+          - Type : Champ texte désactivé
+          - Props :
+            - type : 'text'
+            - v-if : ans.question.type === 'B'
+            - value : String - Réponse saisie
+            - disabled : Champ non modifiable
+        -->
         <input type="text" v-if="ans.question.type === 'B'" :value='ans.value' disabled>
 
-        <!-- Div pour les réponses concernant la question B -->
+        <!--
+          Groupe radio pour type A (réponse unique)
+          - ans.question.type === 'A'
+          - Affiche la valeur sélectionnée
+        -->
         <div v-if="ans.question.type === 'A'" class="QuestionRadioGroup">
           <div class="QuestionRadioOption">
-          <input
-          type="radio"
-          checked
-          disabled
-          >
-          <span> {{ ans.value }} </span>
+            <!--
+              Composant : input (radio)
+              - Type : Champ radio désactivé et coché
+              - Props :
+                - type : 'radio'
+                - checked : Toujours coché
+                - disabled : Toujours désactivé
+            -->
+            <input
+              type="radio"
+              checked
+              disabled
+            >
+            <span> {{ ans.value }} </span>
           </div>
         </div>
 
-        <!-- Div contenant les input pour la réponse aux question de type C -->
-         <div v-if="ans.question.type === 'C'" class="QuestionRadioGroupSelect">
+        <!--
+          Groupe radio pour type C (notation ou échelle)
+          - ans.question.type === 'C'
+          - Affiche une série de boutons radio désactivés
+        -->
+        <div v-if="ans.question.type === 'C'" class="QuestionRadioGroupSelect">
           <div class="QuestionRadioSelect">
+            <!-- Pour chaque valeur de 1 à 5 (notation) -->
             <div class="RadioSelectedDiv" v-for="n in 5" :key="n">
+              <!--
+                Composant : input (radio)
+                - Type : Champ radio désactivé
+                - Props :
+                  - type : 'radio'
+                  - name : String unique par question et valeur
+                  - value : Number
+                  - checked : Sélectionné si ans.value >= n
+              -->
               <input
                 type="radio"
                 :name="'number' + n + ans.question.id"
@@ -71,7 +126,6 @@ onMounted(fetchUserAnswer);
         </div>
         <hr>
       </article>
-
     </section>
   </form>
 </template>

@@ -1,39 +1,87 @@
 <script setup>
-import axios from '@/utilities/axios.js'
-import { ref, onMounted, computed } from 'vue';
-import { getAccessToken } from '@/utilities/utils';
-//import Carousel from './Carousel.vue';
+// -----------------------------------------------------------------------------
+// Composant : Response
+// -----------------------------------------------------------------------------
+// Type : Fonctionnel (affichage des réponses utilisateurs sous forme de tableau paginé)
+//
+// Librairies tierces utilisées :
+// - axios :
+//     - Instance personnalisée pour les requêtes HTTP (récupération questions/réponses)
+// - vue :
+//     - ref : création de variables réactives
+//     - onMounted : hook d'exécution au montage du composant
+//     - computed : propriétés calculées pour la pagination
+// - @/utilities/utils :
+//     - getAccessToken : fonction pour récupérer le token d'accès
+//
+// État local :
+// - Responses (ref<Array>) : liste des réponses utilisateurs
+// - Questions (ref<Array>) : liste des questions du sondage
+// - errorMessage (ref<string>) : message d'erreur affiché en cas d'échec API
+// - currentPage (ref<number>) : page courante de la pagination
+// - tablePerPage (ref<number>) : nombre de réponses par page
+//
+// Méthodes :
+// - totalPages (computed) : nombre total de pages pour la pagination
+// - paginatedTable (computed) : sous-ensemble des réponses à afficher sur la page courante
+// - goToPage (fonction) : change la page courante si la page demandée est valide
+// - fetchQuestions (async) : récupère la liste des questions via l'API
+// - fetchResponses (async) : récupère la liste des réponses via l'API
+// -----------------------------------------------------------------------------
 
+// Importation des librairies tierces et utilitaires
+import axios from '@/utilities/axios.js' // Instance Axios personnalisée
+import { ref, onMounted, computed } from 'vue'; // API de réactivité et hooks Vue 3
+import { getAccessToken } from '@/utilities/utils'; // Fonction utilitaire pour le token
+//import Carousel from './Carousel.vue'; // (optionnel, non utilisé ici)
+
+// Responses : ref<Array> - liste des réponses utilisateurs
 const Responses = ref([]);
+// Questions : ref<Array> - liste des questions du sondage
 const Questions = ref([]);
+// errorMessage : ref<string> - message d'erreur pour affichage utilisateur
 const errorMessage = ref('');
+// currentPage : ref<number> - page courante de la pagination
 const currentPage = ref(1);
+// tablePerPage : ref<number> - nombre de réponses par page
 const tablePerPage = ref(3);
 
-/* const OpenDetail = ref(false);
+/*
+// OpenDetail : ref<boolean> - état d'ouverture du détail d'une réponse
+const OpenDetail = ref(false);
+// selectedResponse : ref<object|null> - réponse sélectionnée pour le détail
 const selectedResponse = ref(null);
-
+// handleOpenDetail : fonction pour ouvrir le détail d'une réponse
 function handleOpenDetail(response) {
   selectedResponse.value = response;
   OpenDetail.value = true;
-  } */
+}
+*/
 
+// totalPages : computed<number> - nombre total de pages pour la pagination
 const totalPages = computed(() => {
   return Math.ceil(Responses.value.length/tablePerPage.value);
 });
 
+// paginatedTable : computed<Array> - sous-ensemble des réponses à afficher
 const paginatedTable = computed(() => {
   const start = (currentPage.value - 1) * tablePerPage.value;
   const end = start + tablePerPage.value;
   return Responses.value.slice(start, end);
 });
 
+// goToPage : fonction pour changer de page
+// - page : number - numéro de la page à afficher
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
   }
 }
 
+/**
+ * Récupère la liste des questions depuis l'API
+ * et met à jour l'état local des Questions.
+ */
 const fetchQuestions = async () => {
   try {
     errorMessage.value = '';
@@ -49,6 +97,10 @@ const fetchQuestions = async () => {
   }
 }
 
+/**
+ * Récupère la liste des réponses depuis l'API
+ * et met à jour l'état local des Responses.
+ */
 const fetchResponses = async () => {
   try {
     errorMessage.value = '';
@@ -64,86 +116,104 @@ const fetchResponses = async () => {
   }
 }
 
+// Récupération des questions et réponses au montage du composant
 onMounted(fetchQuestions);
 onMounted(fetchResponses);
 </script>
 
 <template>
-<section class="Response">
-
-  <article class="ResponseTitle">
-    <h2>Réponses des Utilisateurs</h2>
-    <hr>
-  </article>
-
-  <div v-if="paginatedTable.length > 0">
-
-    <article class="ResponseContent" v-for="(R, i) in paginatedTable" :key="i">
-
-      <table>
-        <thead>
-          <tr>
-            <td>N°</td>
-            <td>Corps de la question</td>
-            <td>Response</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="Q in Questions" :key="Q.id">
-            <td> {{ Q.id }} </td>
-            <td> {{ Q.body }} </td>
-            <td>
-              {{
-                R[Q.id][0]
-              }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
+<!-- -------------------------------------------------------------------------
+    Composant : Response (template)
+    - Type : Fonctionnel
+    - Rôle : Affiche les réponses utilisateurs sous forme de tableau paginé
+    - Librairies tierces utilisées :
+      - v-for (Vue) : itération sur les réponses et questions
+      - v-if (Vue) : affichage conditionnel du tableau
+      - :disabled (Vue) : désactivation des boutons selon l'état
+      - @click (Vue) : gestion des clics sur les boutons de pagination
+  ------------------------------------------------------------------------- -->
+  <section class="Response">
+    <!--
+      Composant : Article (ResponseTitle)
+      - Type : Structurel
+      - Rôle : Affiche le titre de la section et une séparation
+    -->
+    <article class="ResponseTitle">
+      <h2>Réponses des Utilisateurs</h2>
+      <hr>
     </article>
 
-    <section class="ButtonSection">
-      <button :disabled="currentPage === 1" type="button" @click="goToPage(currentPage - 1)">Précédent</button>
-      <button :disabled="currentPage === totalPages" type="button" @click="goToPage(currentPage + 1)">Suivant</button>
-    </section>
+    <!--
+      Bloc d'affichage du tableau paginé
+      - v-if : Affiche le tableau seulement si paginatedTable contient des données
+    -->
+    <div v-if="paginatedTable.length > 0">
+      <!--
+        Composant : Article (ResponseContent)
+        - Type : Structurel
+        - v-for : Parcourt chaque objet réponse paginée (R)
+        - Paramètres :
+          - R : Objet - Réponses pour un utilisateur
+          - i : Number - Index de la réponse dans la page
+        - Rôle : Affiche un tableau des réponses pour chaque utilisateur
+      -->
+      <article class="ResponseContent" v-for="(R, i) in paginatedTable" :key="i">
+        <!--
+          Composant : Table
+          - Type : Structurel
+          - Rôle : Affiche les questions et réponses associées
+        -->
+        <table>
+          <thead>
+            <tr>
+              <td>N°</td> <!-- Colonne : Numéro de la question (Q.id) -->
+              <td>Corps de la question</td> <!-- Colonne : Texte de la question (Q.body) -->
+              <td>Response</td> <!-- Colonne : Réponse de l'utilisateur (R[Q.id][0]) -->
+            </tr>
+          </thead>
+          <tbody>
+            <!--
+              v-for : Parcourt chaque question (Q)
+              - Q : Objet - Question du sondage
+              - Q.id : Number - Identifiant unique de la question
+              - Q.body : String - Texte de la question
+              - R[Q.id][0] : String - Réponse de l'utilisateur à la question Q
+            -->
+            <tr v-for="Q in Questions" :key="Q.id">
+              <td> {{ Q.id }} </td>
+              <td> {{ Q.body }} </td>
+              <td>
+                {{
+                  R[Q.id][0]
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
 
-  </div>
-
-
-  <!-- <article class="ResponseContent">
-
-    <Carousel @open-detail="handleOpenDetail" />
-
-  </article> -->
-
-  <!-- <article class="DetailShadow" v-if="OpenDetail">
-    <div class="DetailResponse">
-      <div class="DetailHeader">
-        <div class="DetailTitle">
-          <h2>Détails pour {{ selectedResponse.email }} </h2>
-          <br>
-          <span>Soumis le {{ selectedResponse.date }} </span>
-        </div>
-        <button type="button" @click="OpenDetail = false">×</button>
-      </div>
-      <hr>
-      <table>
-        <tbody>
-          <tr>
-            <td>(1) Votre adresse mail</td>
-            <td>{{ selectedResponse.email }}</td>
-          </tr>
-          <tr>
-            <td>(2) Votre age</td>
-            <td> {{ selectedResponse.date }} </td>
-          </tr>
-        </tbody>
-      </table>
+      <!--
+        Section : ButtonSection
+        - Type : Structurel
+        - Rôle : Affiche les boutons de pagination
+        - Composants enfants :
+          - Bouton "Précédent"
+            - Type : Bouton de navigation
+            - Props :
+              - :disabled : Boolean - désactivé si on est à la première page
+              - @click : Fonction - appelle goToPage(currentPage - 1)
+          - Bouton "Suivant"
+            - Type : Bouton de navigation
+            - Props :
+              - :disabled : Boolean - désactivé si on est à la dernière page
+              - @click : Fonction - appelle goToPage(currentPage + 1)
+      -->
+      <section class="ButtonSection">
+        <button :disabled="currentPage === 1" type="button" @click="goToPage(currentPage - 1)">Précédent</button>
+        <button :disabled="currentPage === totalPages" type="button" @click="goToPage(currentPage + 1)">Suivant</button>
+      </section>
     </div>
-  </article> -->
-
-</section>
+  </section>
 </template>
 
 <style scoped>
