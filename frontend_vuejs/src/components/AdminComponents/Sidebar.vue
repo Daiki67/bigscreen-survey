@@ -65,89 +65,98 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <!-- SidebarContainer : conteneur principal de la barre latérale -->
-  <div class="SidebarContainer">
-    <!-- SidebarDivLogo : zone d'affichage du logo -->
-    <div class="SidebarDivLogo">
-      <div>
-        <h2>bigscreen</h2>
+  <div>
+
+    <!-- SidebarContainer : conteneur principal de la barre latérale -->
+    <div class="SidebarContainer">
+      <!-- SidebarDivLogo : zone d'affichage du logo -->
+      <div class="SidebarDivLogo">
+        <div>
+          <h2>bigscreen</h2>
+        </div>
+      </div>
+      <!-- SidebarItems : liste des boutons de navigation -->
+      <div class="SidebarItems">
+        <hr>
+        <!--
+          Composant : RouterLink (Accueil)
+          - Type : Lien de navigation
+          - Props :
+            - to : String - '/administration/dashboard' (chemin de destination)
+            - class : String - 'router-link' (classe CSS)
+          - Contenu :
+            - Button
+              - Nom : Acceuil
+              - Type : bouton de navigation
+              - Paramètres : active si $route.name === 'Dashboard'
+              - Rôle : Accéder au tableau de bord admin
+        -->
+        <router-link to="/administration/dashboard" class="router-link">
+          <button type="button" :class="{ 'active' : $route.name === 'Dashboard' }">
+              Acceuil
+          </button>
+        </router-link>
+        <!--
+          Composant : RouterLink (Questionnaire)
+          - Type : Lien de navigation
+          - Props :
+            - to : String - '/administration/quiz'
+            - class : String - 'router-link'
+          - Contenu :
+            - Button
+              - Nom : Questionnaire
+              - Type : bouton de navigation
+              - Paramètres : active si $route.name === 'Quiz'
+              - Rôle : Accéder à la gestion des questionnaires
+        -->
+        <router-link to="/administration/quiz" class="router-link">
+          <button type="button" :class="{ 'active' : $route.name === 'Quiz' }">
+            Questionnaire
+          </button>
+        </router-link>
+        <!--
+          Composant : RouterLink (Réponses)
+          - Type : Lien de navigation
+          - Props :
+            - to : String - '/administration/response'
+            - class : String - 'router-link'
+          - Contenu :
+            - Button
+              - Nom : Réponses
+              - Type : bouton de navigation
+              - Paramètres : active si $route.name === 'Response'
+              - Rôle : Accéder à la gestion des réponses
+        -->
+        <router-link to="/administration/response" class="router-link">
+          <button type="button" :class="{ 'active' : $route.name === 'Response' }">
+            Réponses
+          </button>
+        </router-link>
+        <!--
+          Composant : RouterLink (Logout)
+          - Type : Lien d'action
+          - Props :
+            - to : String - '#'
+            - class : String - 'router-link'
+            - @click : Fonction - handleLogout (déclenche la déconnexion)
+          - Contenu :
+            - Button
+              - Nom : Logout
+              - Type : bouton d'action
+              - Rôle : Déconnecter l'administrateur
+        -->
+        <router-link to="#" class="router-link" @click="handleLogout">
+          <button type="button">
+            Logout
+          </button>
+        </router-link>
       </div>
     </div>
-    <!-- SidebarItems : liste des boutons de navigation -->
-    <div class="SidebarItems">
+
+    <div  class="TopBar">
+      <h2>Administration</h2>
       <hr>
-      <!--
-        Composant : RouterLink (Accueil)
-        - Type : Lien de navigation
-        - Props :
-          - to : String - '/administration/dashboard' (chemin de destination)
-          - class : String - 'router-link' (classe CSS)
-        - Contenu :
-          - Button
-            - Nom : Acceuil
-            - Type : bouton de navigation
-            - Paramètres : active si $route.name === 'Dashboard'
-            - Rôle : Accéder au tableau de bord admin
-      -->
-      <router-link to="/administration/dashboard" class="router-link">
-        <button type="button" :class="{ 'active' : $route.name === 'Dashboard' }">
-            Acceuil
-        </button>
-      </router-link>
-      <!--
-        Composant : RouterLink (Questionnaire)
-        - Type : Lien de navigation
-        - Props :
-          - to : String - '/administration/quiz'
-          - class : String - 'router-link'
-        - Contenu :
-          - Button
-            - Nom : Questionnaire
-            - Type : bouton de navigation
-            - Paramètres : active si $route.name === 'Quiz'
-            - Rôle : Accéder à la gestion des questionnaires
-      -->
-      <router-link to="/administration/quiz" class="router-link">
-        <button type="button" :class="{ 'active' : $route.name === 'Quiz' }">
-          Questionnaire
-        </button>
-      </router-link>
-      <!--
-        Composant : RouterLink (Réponses)
-        - Type : Lien de navigation
-        - Props :
-          - to : String - '/administration/response'
-          - class : String - 'router-link'
-        - Contenu :
-          - Button
-            - Nom : Réponses
-            - Type : bouton de navigation
-            - Paramètres : active si $route.name === 'Response'
-            - Rôle : Accéder à la gestion des réponses
-      -->
-      <router-link to="/administration/response" class="router-link">
-        <button type="button" :class="{ 'active' : $route.name === 'Response' }">
-          Réponses
-        </button>
-      </router-link>
-      <!--
-        Composant : RouterLink (Logout)
-        - Type : Lien d'action
-        - Props :
-          - to : String - '#'
-          - class : String - 'router-link'
-          - @click : Fonction - handleLogout (déclenche la déconnexion)
-        - Contenu :
-          - Button
-            - Nom : Logout
-            - Type : bouton d'action
-            - Rôle : Déconnecter l'administrateur
-      -->
-      <router-link to="#" class="router-link" @click="handleLogout">
-        <button type="button">
-          Logout
-        </button>
-      </router-link>
+
     </div>
   </div>
 </template>
@@ -161,6 +170,10 @@ const handleLogout = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.TopBar {
+  display: none;
 }
 
 .SidebarDivLogo {
@@ -235,5 +248,29 @@ button.active {
 button.active:hover {
   background-color: #00b8ff;
   color: black;
+}
+
+@media screen and (max-width: 1024px) {
+  
+  .SidebarDivLogo div h2 {
+    font-size: 2.8rem;
+  }
+  
+}
+
+@media screen and (max-width: 768px) {
+  
+  .SidebarDivLogo div h2 {
+    font-size: 2.2rem;
+  }
+  
+}
+
+@media screen and (max-width: 480px) {
+  
+  .SidebarContainer {
+    display: none;
+  }
+  
 }
 </style>
