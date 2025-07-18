@@ -241,4 +241,67 @@ form button:hover {
     transform: translate(0, 0) scale(1); opacity: 0.8 ;
   }
 }
+
+@media (max-width: 768px) {
+  .LoginBlock {
+    width: 50%;
+    height: 70vh;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .DivTitle {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  form input {
+    width: 90%;
+    height: 10%;
+  }
+  
+  form button {
+    width: 90%;
+    font-size: 1.2rem;
+    padding: 10px;
+  }
+
+}
+
+@media (max-width: 376px) {
+
+  .LoginBlock {
+    height: 50vh;
+  }
+
+  form input {
+    height: 7%;
+  }
+  
+  form button {
+    padding: 7px;
+  }
+  
+}
+
+@media (max-width: 320px) {
+  
+  .LoginBlock {
+    height: 50vh;
+  }
+
+  .DivTitle {
+    font-size: 1.6rem;
+  }
+
+  form input {
+    height: 7%;
+  }
+  
+  form button {
+    padding: 4px;
+    font-size: 1rem;
+  }
+  
+}
 </style>
