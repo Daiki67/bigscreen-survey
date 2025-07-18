@@ -349,4 +349,28 @@ onMounted(fetchUserAnswer);
   /*.RadioSelectedDiv {
     display: flex;
   }*/
+
+  @media (min-width: 320px) and (max-width: 426px) {
+
+    form {
+      padding: 30px 40px 30px 20px;
+    }
+
+   .SubmitButtonSection button {
+    width: 100%;
+    margin-left: 0;
+   }  
+
+   .QuestionContainer {
+    width: 100%;
+    margin: 0px;
+   }
+
+   .QuestionAnswer input[type = 'text'],
+  .QuestionAnswer input[type = 'number'],
+  .QuestionAnswer input[type = 'email'] {
+    width: 90%;
+  }
+
+  }
 </style>
