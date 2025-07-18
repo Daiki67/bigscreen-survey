@@ -1,0 +1,269 @@
+# Documentation technique Backend - Bigscreen Survey
+
+## 1. Contrôleurs
+
+### SurveyController
+- **Rôle** : Gère les questions, la soumission et la récupération des réponses d’un sondage.
+- **Classe** : `SurveyController`
+- **Méthodes** :
+  - `index()`
+    - Rôle : Affiche toutes les questions du sondage.
+    - Paramètres : Aucun
+    - Retour : Collection de `QuestionResource`
+  - `store(Request $request)`
+    - Rôle : Valide et enregistre les réponses du sondage.
+    - Paramètres : `Request $request` (réponses utilisateur)
+    - Retour : JSON (message, token unique, réponses enregistrées)
+  - `showResults(string $token)`
+    - Rôle : Affiche les réponses d’un utilisateur via son jeton unique.
+    - Paramètres : `string $token`
+    - Retour : JSON (ressource de soumission complète ou erreur)
+
+---
+
+### QuestionController
+- **Rôle** : Gère la consultation (et potentiellement l’édition) des questions du sondage.
+- **Classe** : `QuestionController`
+- **Méthodes** :
+  - `index()`
+    - Rôle : Liste toutes les questions du sondage.
+    - Paramètres : Aucun
+    - Retour : Collection de `QuestionResource`
+  - `show(Question $question)`
+    - Rôle : Affiche une question spécifique.
+    - Paramètres : `Question $question`
+    - Retour : `QuestionResource` ou JSON
+
+---
+
+### DashboardController
+- **Rôle** : Gère les statistiques pour le tableau de bord admin.
+- **Classe** : `DashboardController`
+- **Méthodes** :
+  - `index()`
+    - Rôle : Affiche les statistiques (données pour graphiques).
+    - Paramètres : Aucun
+    - Retour : JSON (données pie chart, radar chart)
+  - `getPieChartDataForQuestion(int $questionId)` (privée)
+    - Rôle : Données pour un graphique camembert d’une question.
+    - Paramètres : `int $questionId`
+    - Retour : Collection (valeurs et occurrences)
+  - `getRadarQualityAnswersByQuestionId()` (privée)
+    - Rôle : Données pour le radar (questions 11 à 15)
+    - Paramètres : Aucun
+    - Retour : Collection groupée
+
+---
+
+### AnswerController
+- **Rôle** : Gère l’affichage des réponses par soumission et question.
+- **Classe** : `AnswerController`
+- **Méthodes** :
+  - `index()`
+    - Rôle : Liste toutes les réponses par soumission et question.
+    - Paramètres : Aucun
+    - Retour : JSON (tableau des réponses)
+  - `getAnswersByQuestionId(int $submissionId, int $questionId)` (privée)
+    - Rôle : Récupère les réponses pour une question d’une soumission.
+    - Paramètres : `int $submissionId`, `int $questionId`
+    - Retour : Collection des valeurs
+
+---
+
+## 2. Modèles & Tables de la base de données
+
+## Tables principales
+
+### 1. users
+- **Rôle** : Stocke les informations des utilisateurs (admin ou sondés)
+- **Champs** :
+  - id (bigint, PK) : identifiant unique
+  - name (string) : nom de l’utilisateur
+  - email (string, unique) : email
+  - email_verified_at (timestamp, nullable) : date de vérification
+  - password (string) : mot de passe hashé
+  - remember_token (string) : jeton de session
+  - created_at, updated_at (timestamps)
+
+### 2. questions
+- **Rôle** : Stocke toutes les questions du sondage
+- **Champs** :
+  - id (bigint, PK) : identifiant unique
+  - title (string) : titre de la question
+  - body (string) : texte de la question
+  - type (enum) : type de la question ('A', 'B', 'C')
+  - options (json, nullable) : options de réponse
+  - created_at, updated_at (timestamps)
+
+### 3. submissions
+- **Rôle** : Stocke chaque soumission de réponses à un sondage
+- **Champs** :
+  - id (bigint, PK) : identifiant unique
+  - url_token (string, unique) : jeton unique de la soumission
+  - created_at, updated_at (timestamps)
+
+### 4. answers
+- **Rôle** : Stocke toutes les réponses aux questions du sondage
+- **Champs** :
+  - id (bigint, PK) : identifiant unique
+  - submission_id (bigint, FK) : référence à la soumission
+  - question_id (bigint, FK) : référence à la question
+  - value (text) : valeur de la réponse
+  - created_at, updated_at (timestamps)
+
+---
+
+## Relations principales
+- Un utilisateur peut avoir plusieurs soumissions (1-N)
+- Une soumission est liée à plusieurs réponses (1-N)
+- Une question peut avoir plusieurs réponses (1-N)
+- Une réponse appartient à une soumission et à une question (N-1)
+
+---
+
+## Index et contraintes
+- Clés primaires : id sur chaque table
+- Clés étrangères :
+  - answers.submission_id → submissions.id (cascade)
+  - answers.question_id → questions.id (cascade)
+- Contraintes d’unicité :
+  - users.email
+  - submissions.url_token
+
+---
+
+## Schéma simplifié
+
+users (1)───(N) submissions (1)───(N) answers (N)───(1) questions
+
+---
+
+## Factories détaillées
+
+- **UserFactory**
+  - Rôle : Génère des utilisateurs factices pour les tests et le remplissage de la base.
+  - Champs générés :
+    - name : nom aléatoire
+    - email : email unique et valide
+    - email_verified_at : date de vérification (now)
+    - password : mot de passe hashé (par défaut 'password')
+    - remember_token : token aléatoire
+  - Utilisation : `User::factory()->count(10)->create();`
+
+- **QuestionFactory**
+  - Rôle : Génère des questions factices avec différents types et options.
+  - Champs générés :
+    - title : phrase aléatoire
+    - body : texte aléatoire
+    - type : 'A', 'B' ou 'C' (aléatoire)
+    - options : tableau d'options ou null (ex : Oui/Non, 1-5, etc.)
+  - Utilisation : `Question::factory()->count(20)->create();`
+
+- **SubmissionFactory**
+  - Rôle : Génère des soumissions factices avec un jeton unique.
+  - Champs générés :
+    - url_token : UUID unique
+  - Utilisation : `Submission::factory()->count(100)->create();`
+
+- **AnswerFactory**
+  - Rôle : Génère des réponses factices associées à une soumission et une question.
+  - Champs générés :
+    - submission_id : référence à une soumission générée
+    - question_id : référence à une question générée
+    - value : valeur de la réponse (à adapter selon le type de question)
+  - Utilisation : `Answer::factory()->count(2000)->create();`
+
+## Seeders détaillés
+
+- **DatabaseSeeder**
+  - Rôle : Seeder principal, orchestre l'exécution de tous les seeders.
+  - Actions :
+    - Crée un utilisateur administrateur par défaut
+    - Lance les seeders QuestionSeeder, SubmissionSeeder, AnswerSeeder
+
+- **QuestionSeeder**
+  - Rôle : Remplit la table `questions` avec toutes les questions du sondage.
+  - Actions :
+    - Supprime les questions existantes
+    - Insère un tableau de 20 questions (titre, corps, type, options)
+    - Gère les types et options selon la logique du sondage
+
+- **SubmissionSeeder**
+  - Rôle : Génère des soumissions factices pour simuler des participations.
+  - Actions :
+    - Crée 100 soumissions via la factory
+
+- **AnswerSeeder**
+  - Rôle : Génère des réponses pour chaque soumission et chaque question.
+  - Actions :
+    - Pour chaque soumission, génère une réponse pour chaque question
+    - Utilise une fonction pour adapter la valeur de la réponse au type de question
+    - Remplit la table `answers` avec toutes les combinaisons
+
+---
+
+# Récapitulatif des classes, méthodes et fonctions
+
+## Factories
+| Classe              | Rôle                                                        | Méthodes principales / Paramètres |
+|---------------------|-------------------------------------------------------------|-----------------------------------|
+| UserFactory         | Génère des utilisateurs factices                            | definition()                      |
+| QuestionFactory     | Génère des questions factices                               | definition()                      |
+| SubmissionFactory   | Génère des soumissions factices                             | definition()                      |
+| AnswerFactory       | Génère des réponses factices                                | definition()                      |
+
+## Seeders
+| Classe            | Rôle                                                                 | Méthodes principales / Paramètres |
+|-------------------|----------------------------------------------------------------------|-----------------------------------|
+| DatabaseSeeder    | Orchestration de tous les seeders, création d'un admin par défaut    | run()                             |
+| QuestionSeeder    | Remplit la table questions avec toutes les questions du sondage      | run()                             |
+| SubmissionSeeder  | Génère des soumissions factices via la factory                      | run()                             |
+| AnswerSeeder      | Génère des réponses pour chaque soumission et chaque question       | run(), generateAnswerValue()      |
+
+
+# Détail des tables de la base de données
+
+## Table : users
+| Champ             | Type         | Rôle                                      |
+|-------------------|--------------|-------------------------------------------|
+| id                | bigint (PK)  | Identifiant unique                        |
+| name              | string       | Nom de l'utilisateur                      |
+| email             | string       | Email unique                              |
+| email_verified_at | timestamp    | Date de vérification                      |
+| password          | string       | Mot de passe hashé                        |
+| remember_token    | string       | Jeton de session                          |
+| created_at        | timestamp    | Date de création                          |
+| updated_at        | timestamp    | Date de mise à jour                       |
+
+## Table : questions
+| Champ    | Type         | Rôle                                      |
+|----------|--------------|-------------------------------------------|
+| id       | bigint (PK)  | Identifiant unique                        |
+| title    | string       | Titre de la question                      |
+| body     | string       | Texte de la question                      |
+| type     | enum         | Type de la question ('A', 'B', 'C')       |
+| options  | json/null    | Options de réponse                        |
+| created_at | timestamp  | Date de création                          |
+| updated_at | timestamp  | Date de mise à jour                       |
+
+## Table : submissions
+| Champ     | Type         | Rôle                                      |
+|-----------|--------------|-------------------------------------------|
+| id        | bigint (PK)  | Identifiant unique                        |
+| url_token | string       | Jeton unique de la soumission             |
+| created_at| timestamp    | Date de création                          |
+| updated_at| timestamp    | Date de mise à jour                       |
+
+## Table : answers
+| Champ         | Type         | Rôle                                      |
+|---------------|--------------|-------------------------------------------|
+| id            | bigint (PK)  | Identifiant unique                        |
+| submission_id | bigint (FK)  | Référence à la soumission                 |
+| question_id   | bigint (FK)  | Référence à la question                   |
+| value         | text         | Valeur de la réponse                      |
+| created_at    | timestamp    | Date de création                          |
+| updated_at    | timestamp    | Date de mise à jour                       |
+
+---
+
+Cette documentation est basée sur les migrations et les modèles Laravel du projet.
