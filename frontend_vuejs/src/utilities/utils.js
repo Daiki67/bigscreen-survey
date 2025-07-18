@@ -44,7 +44,7 @@ export const isAuthenticated = async() => {
     const response = await axios.get('/admin/auth',{
       headers: { Authorization: 'Bearer ' + token }  // Ajoute le token dans l'en-tête Authorization
     });
-    console.log(response.data.authenticated);
+    //console.log(response.data.authenticated);
     return true
   } catch (e) {
     console.error('Erreur lors de la récupération du user admin connecté: ', e);
