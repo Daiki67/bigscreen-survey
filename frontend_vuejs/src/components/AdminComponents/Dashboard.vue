@@ -66,25 +66,44 @@ const fetchDataChart = async () => {
 // -----------------------------------------------------------------------------
 // PieChartOptionsQ6 : Options pour le graphique camembert Q6
 const PieChartOptionsQ6 = computed(() => ({
-  series: PieChartDataQuestion6.value.map(obj => Number(obj.count)), // Données numériques
+  series: PieChartDataQuestion6.value.map(obj => Number(obj.count)),
   chart: {
     width: 500,
     type: 'pie',
   },
-  labels: PieChartDataQuestion6.value.map(obj => obj.value), // Libellés des catégories
+  labels: PieChartDataQuestion6.value.map(obj => obj.value),
+  legend: {
+    position: 'bottom',
+    horizontalAlign: 'center',
+    fontSize: '14px',
+    fontFamily: 'Arial, sans-serif',
+    labels: {
+      colors: ['#ffffff'],
+      useSeriesColors: true
+    },
+    markers: {
+      width: 12,
+      height: 12,
+      radius: 12
+    },
+    itemMargin: {
+      horizontal: 10,
+      vertical: 5
+    }
+  },
   responsive: [{
     breakpoint: 380,
     options: {
       chart: {
-        width: 0
+        width: 300
       },
       legend: {
-        position: 'left'
+        position: 'bottom'
       }
     }
-  }],
- })
-);
+  }]
+}));
+
 // PieChartOptionsQ7 : Options pour le graphique camembert Q7
 const PieChartOptionsQ7 = computed(() => ({
   series: PieChartDataQuestion7.value.map(obj => Number(obj.count)),
@@ -93,19 +112,38 @@ const PieChartOptionsQ7 = computed(() => ({
     type: 'pie',
   },
   labels: PieChartDataQuestion7.value.map(obj => obj.value),
+  legend: {
+    position: 'bottom',
+    horizontalAlign: 'center',
+    fontSize: '14px',
+    fontFamily: 'Arial, sans-serif',
+    labels: {
+      colors: ['#ffffff'],
+      useSeriesColors: true
+    },
+    markers: {
+      width: 12,
+      height: 12,
+      radius: 12
+    },
+    itemMargin: {
+      horizontal: 10,
+      vertical: 5
+    }
+  },
   responsive: [{
     breakpoint: 380,
     options: {
       chart: {
-        width: 0
+        width: 300
       },
       legend: {
-        position: 'left'
+        position: 'bottom'
       }
     }
-  }],
- })
-);
+  }]
+}));
+
 // PieChartOptionsQ10 : Options pour le graphique camembert Q10
 const PieChartOptionsQ10 = computed(() => ({
   series: PieChartDataQuestion10.value.map(obj => Number(obj.count)),
@@ -114,35 +152,73 @@ const PieChartOptionsQ10 = computed(() => ({
     type: 'pie',
   },
   labels: PieChartDataQuestion10.value.map(obj => obj.value),
-  responsive: [{
-    breakpoint: 380,
-    options: {
-      chart: {
-        width: 0
-      },
-      legend: {
-        position: 'left'
+  legend: {
+    position: 'bottom',
+    horizontalAlign: 'center',
+    fontSize: '14px',
+    fontFamily: 'Arial, sans-serif',
+    labels: {
+      colors: ['#ffffff'],
+      useSeriesColors: true
+    }
+  },
+  responsive: [
+    {
+      breakpoint: 380,
+      options: {
+        chart: {
+          width: 300
+        },
+        legend: {
+          position: 'bottom'
+        }
       }
     }
-  }],
- })
-);
+  ]
+}));
+
 // RadarDataOptions : Options pour le graphique radar (Q11-Q15)
 const RadarDataOptions = computed(() => ({
   series: [{
-    name: 'Series 1',
-    data: RadarChartData.value.map(obj => Number(obj.count)) // Données numériques
+    name: 'Value',
+    data: RadarChartData.value.map(obj => Number(obj.count))
   }],
   options: {
     chart: {
       height: 350,
       type: 'radar',
+      toolbar: {
+        show: false
+      }
     },
     xaxis: {
-      categories: RadarChartData.value.map(obj => obj.value) // Libellés des axes
+      categories: RadarChartData.value.map(obj => obj.value),
+      labels: {
+        style: {
+          colors: '#ffffff', 
+          fontSize: '14px'
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: 'none'
+        }
+      }
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['#00E396']
+    },
+    fill: {
+      opacity: 0.1,
+      colors: ['#00E396']
     }
   }
 }));
+
 
 // Hook d’exécution au montage du composant
 onMounted(fetchDataChart);
@@ -252,5 +328,24 @@ onMounted(fetchDataChart);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+
+  .DashboardContent {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+}
+
+@media (max-width: 480px) {
+
+  .Dashboard {
+    /*border: 1px solid white;*/
+    width: 80vw;
+    padding: 40px 0px;
+  }
+  
 }
 </style>
