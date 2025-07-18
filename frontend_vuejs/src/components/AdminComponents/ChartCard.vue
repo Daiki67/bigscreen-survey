@@ -100,6 +100,26 @@ const props = defineProps({
   height: 330px;
   margin: auto;
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+@media (max-width: 1024px) {
+
+  .ChartCard {
+    width: 40%;
+  }
+  
+}
+
+@media (max-width: 768px) {
+  
+  .ChartCard {
+    width: 80%;
+  }
+  
+}
+
 </style>
 
