@@ -20,7 +20,8 @@
 // -----------------------------------------------------------------------------
 
 // Import de l’instance Axios personnalisée pour les requêtes HTTP
-import axios from '@/utilities/axios.js'; // Type : AxiosInstance
+import axiosjs from '@/utilities/axios.js'; // Type : AxiosInstance
+import axios from 'axios'; // Type : AxiosInstance
 // Import des fonctions de Vue pour la réactivité et les hooks
 import { onMounted, ref, watch } from 'vue'; // ref<T>, onMounted(fn), watch(source, cb)
 // Import du composable useRouter pour la navigation
@@ -41,6 +42,8 @@ const answer = ref({});
 const UrlToken = ref(null);
 // accessUrl : Ref<string|null> - URL d’accès générée pour consulter les réponses
 const accessUrl = ref(null);
+// isLoading : Ref<boolean> - Indicateur de chargement pour les requêtes asynchrones
+const isLoading = ref(false);
 // router : Router - Instance du routeur Vue pour la navigation
 const router = useRouter();
 
@@ -56,7 +59,7 @@ const router = useRouter();
 const fetchQuestions = async () => {
   try {
     errorMessage.value = '';
-    const response = await axios.get('/survey/question');
+    const response = await axiosjs.get('/survey/question');
     Questions.value = response.data.data;
     //console.log(Questions.value);
   } catch (e) {
@@ -117,13 +120,16 @@ const SurveySubmitted = async(e) => {
   e.preventDefault();
   if (!validateAnswers) return;
   try {
+    isLoading.value = true; // Indique le début du chargement
     errorMessage.value = '';
-    const response = await axios.post('/survey/store', {
+    const response = await axios.post('http://localhost:8000/api/survey/store', {
       answer: answer.value
     });
     UrlToken.value = response.data.urlToken
     openModal.value = true;
+    isLoading.value = false; // Fin du chargement
   } catch (e) {
+    isLoading.value = false; // Fin du chargement en cas d’erreur
     console.error('Erreur lors de la sauvegarde des réponses du formulaire:', e);
     errorMessage.value = 'Erreur survenue lors de la sauvegarde des réponses du formulaire';
     alert(errorMessage.value);
@@ -327,7 +333,12 @@ onMounted(fetchQuestions);
         - button : Bouton de soumission du formulaire
     -->
     <section class="SubmitButtonSection">
-      <button type="submit">Finaliser</button>
+      <button type="submit" v-if="isLoading === false">
+        Finaliser
+      </button>
+      <button type="submit" disabled v-else>
+        Envoi en cours...
+      </button>
     </section>
 
     <!--
@@ -390,7 +401,8 @@ onMounted(fetchQuestions);
     width: 35%;
     height: 20%;
     color: #fff;
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+    font-family: 'Orbitron', sans-serif;
   }
 
   .LogoContainerSpanDiv {
