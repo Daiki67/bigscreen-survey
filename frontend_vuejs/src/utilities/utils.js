@@ -1,5 +1,5 @@
 // Import de l'instance Axios personnalisée
-import axios from './axios.js';
+import axios from 'axios';
 
 /**
  * Enregistre le token d'accès dans le localStorage
@@ -41,7 +41,7 @@ export const isAuthenticated = async() => {
     if (!token || token === '' || token === undefined) {
       return false
     }
-    const response = await axios.get('/admin/auth',{
+    const response = await axios.get('http://localhost:8000/api/admin/auth',{
       headers: { Authorization: 'Bearer ' + token }  // Ajoute le token dans l'en-tête Authorization
     });
     //console.log(response.data.authenticated);
