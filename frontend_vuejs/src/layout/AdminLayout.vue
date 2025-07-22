@@ -31,4 +31,14 @@ import Sidebar from '@/components/AdminComponents/Sidebar.vue';
   justify-content: center;
   overflow-x: hidden;
 }
+
+@media screen and (max-width: 480px) {
+
+  .content-wrapper {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 60px;
+  }
+  
+}
 </style>
