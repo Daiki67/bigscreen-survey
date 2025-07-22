@@ -22,8 +22,14 @@ Jour 19: Récupération des données entrées par l'utilisateur & envoie vers la
 Jour 20: Work In Progress: Affichage dynamique du sondé via le lien contenant l'UrlToken
 Jour 21: Restructuration du cahier de charges et suppression des dépendances non utilis comme storybook
 Jour 22: Rédaction de la documentation du frontend et du backend dans des fichiers .txt à la racine de chaque dossier
-Jour 23: Mise à niveau du site au format responsive
-Jour 24: Ajout des commentaires pour chaque fichier de l'interface frontend
+Jour 23: Ajout des commentaires pour chaque fichier de l'interface frontend
+Jour 24: Mise à niveau du site au format responsive
+Jour 25: Ajout d'un loader pendant le traitement de l'api
+Jour 26: Test & correction des petits bugs et retour dans la console du navigateur
+Jour 27: Réécriture du cahier de charge et rédaction des doculents restants
+Jour 28: Finalisation de la Wireframe & importation à la racine du projet
+Jour 29: Génération des diagrammes de classe, d'activités et de cas d'utilisation 
+Jour 30: Rédaction du PowerPoint de présentation 
 
 Commandes utilisées lors du développement:
 
