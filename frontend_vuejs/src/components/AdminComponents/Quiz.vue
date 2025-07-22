@@ -49,4 +49,14 @@ import QuizTable from './QuizTable.vue';
   color: #b3b3b3;
   font-size: 1.1rem;
 }
+
+@media (max-width: 480px) {
+
+  .Quiz {
+    /*border: 1px solid white;*/
+    width: 80vw;
+    padding: 40px 0px;
+  }
+  
+}
 </style>
