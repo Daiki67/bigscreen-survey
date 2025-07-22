@@ -139,6 +139,7 @@ async function handlelogin(e) {
   align-items: center;
   font-size: 2.6rem;
   color: #fff;
+  /*font-family: "Neue Haas Grotesk Display Pro - 55 Roman", "Zen Kaku Gothic New - Regular", sans-serif;*/
 }
 
 form {
