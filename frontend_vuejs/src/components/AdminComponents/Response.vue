@@ -480,5 +480,30 @@ tbody td:nth-child(3) {
   background-color: #1e1e1e;
   color: grey;
 }
+
+@media (max-width: 480px) {
+
+  .Response {
+    /*border: 1px solid white;*/
+    width: 80vw;
+    padding: 40px 0px;
+  }
+
+  .ButtonSection {
+    width: 100%;
+    margin: auto;
+    justify-content: space-around;
+    margin-top: 30px;
+   }
+  
+  .ButtonSection button {
+    padding: 10px 10px;
+    width: 120px;
+  }
+
+  /*tbody td:nth-child(2) {
+    width: 50%;
+  }*/
+}
 </style>
 
