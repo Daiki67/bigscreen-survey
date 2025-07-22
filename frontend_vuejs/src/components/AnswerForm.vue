@@ -1,5 +1,5 @@
 <script setup>
-import axios from 'axios';
+import axios from '@/utilities/axios.js';
 import { ref, onMounted } from 'vue';
 
 const props = defineProps(['token']);
@@ -10,7 +10,7 @@ const errorMessage = ref('');
 const fetchUserAnswer = async () => {
   try {
     errorMessage.value = '';
-    const response = await axios.get(`http://localhost:8000/api/survey/result/${props.token}`);
+    const response = await axios.get(`/survey/result/${props.token}`);
     PersonalAnswer.value = response.data.submission.answers;
     //console.log(PersonalAnswer.value);
   } catch (e) {
