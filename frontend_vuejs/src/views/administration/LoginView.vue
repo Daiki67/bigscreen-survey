@@ -137,9 +137,9 @@ async function handlelogin(e) {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2.6rem;
+  font-size: 1.9rem;
   color: #fff;
-  /*font-family: "Neue Haas Grotesk Display Pro - 55 Roman", "Zen Kaku Gothic New - Regular", sans-serif;*/
+  font-family: 'Orbitron', sans-serif;
 }
 
 form {
@@ -171,6 +171,7 @@ form button {
   background-color: #00b8ff;
   transition: all 0.2s;
   font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
 }
 
 form button:hover {

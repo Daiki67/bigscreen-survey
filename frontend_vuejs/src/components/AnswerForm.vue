@@ -161,7 +161,8 @@ onMounted(fetchUserAnswer);
     width: 35%;
     height: 20%;
     color: #fff;
-    font-size: 2.5rem;
+    font-size: 2.2rem;
+    font-family: 'Orbitron', sans-serif;
   }
 
   .LogoContainerSpanDiv {

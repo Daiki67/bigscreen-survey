@@ -244,8 +244,9 @@ const closeMenu = () => {
 }
 
 .SidebarDivLogo div h2 {
-  font-size: 3.2rem;
+  font-size: 2.5rem;
   color: #fff;
+  font-family: 'Orbitron', sans-serif;
 }
 
 .SidebarItems {
@@ -340,7 +341,7 @@ button.active:hover {
     justify-content: center;
     font-size: 1.8rem;
     margin-left: 20px;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'Orbitron', sans-serif;
   }
   
   .routerlink {
