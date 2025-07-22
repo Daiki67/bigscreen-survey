@@ -1,0 +1,287 @@
+# Documentation technique Frontend - Bigscreen Survey
+
+## Composants Vue
+
+### App.vue
+- **Nom** : App
+- **Type** : Composant racine Vue 3
+- **Props/Paramètres** : Aucun
+- **Utilisation** : Affiche le routeur principal (`<router-view />`)
+- **Librairies tierces** :
+  - vue-router : RouterLink, RouterView
+
+
+### SurveyForm.vue
+
+---
+
+## Récapitulatif détaillé : Fonctions et variables principales des composants AdminComponents et vues administration
+
+### Sidebar.vue
+- **Variables :**
+  - `errorMessage` : Ref<string> — message d’erreur pour la déconnexion
+  - `router` : Router — instance du routeur
+- **Fonctions :**
+  - `handleLogout (async)` : 
+    - Déconnecte l’utilisateur (requête API `/admin/logout`)
+    - Supprime le token d’accès (`removeAccessToken`)
+    - Redirige vers `/administration`
+    - Gère les erreurs (affichage d’un message)
+
+### Dashboard.vue
+- **Variables :**
+  - `errorMessage` : Ref<string> — message d’erreur pour la récupération des données
+  - `PieChartDataQuestion6/7/10` : Ref<Array<{value, count}>> — données pour les graphiques camembert
+  - `RadarChartData` : Ref<Array<{value, count}>> — données pour le radar chart
+  - `PieChartOptionsQ6` : Computed — options ApexCharts pour le graphique Q6
+- **Fonctions :**
+  - `fetchDataChart (async)` : 
+    - Récupère les données statistiques via l’API
+    - Formate les données pour les graphiques
+    - Gère les erreurs (affichage d’un message)
+  - Fonctions de transformation des données pour ApexCharts (via `Object.entries`)
+
+### ChartCard.vue
+- **Variables :**
+  - Props :
+    - `ChartTitle` : String — titre du graphique
+    - `ChartType` : String — type de graphique
+    - `ChartOptions` : Object — options ApexCharts
+    - `ChartSeries` : Array — données du graphique
+- **Fonctions :**
+  - Affichage du graphique via `<vue-apex-charts>` (aucune logique métier propre)
+
+### DashboardView.vue
+- **Variables :**
+  - Aucun état local
+- **Fonctions :**
+  - Affiche simplement le composant `Dashboard`
+
+### LoginView.vue
+- **Variables :**
+  - `errorMessage` : Ref<string> — message d’erreur pour la connexion
+  - `email` : Ref<string> — email saisi
+  - `password` : Ref<string> — mot de passe saisi
+  - `router` : Router — instance du routeur
+- **Fonctions :**
+  - `handlelogin (async)` :
+    - Gère la soumission du formulaire de connexion
+    - Envoie la requête de connexion à l’API (`axios.post`)
+    - Stocke le token d’accès (`setAccessToken`)
+    - Redirige vers `/admin`
+    - Gère les erreurs (affichage d’un message)
+- **Nom** : SurveyForm
+- **Type** : Composant formulaire Vue 3
+- **Props/Paramètres** : Aucun
+- **Rôle** : Affiche le formulaire du sondage, gère la récupération des questions, la validation et la soumission.
+- **Librairies tierces** :
+  - axios (instance personnalisée) : requêtes HTTP
+  - vue : ref, onMounted, watch
+  - vue-router : useRouter
+
+---
+
+### AnswerForm.vue
+- **Nom** : AnswerForm
+- **Type** : Composant Vue 3 (consultation)
+- **Props/Paramètres** :
+  - token (String) : Token d’accès unique (obligatoire)
+- **Rôle** : Affiche les réponses d’un utilisateur à un sondage
+- **Librairies tierces** :
+  - axios : requêtes HTTP
+  - vue : ref, onMounted
+
+---
+
+### SurveyView.vue
+- **Nom** : SurveyView
+- **Type** : Vue de page
+- **Props/Paramètres** : Aucun
+- **Rôle** : Conteneur pour le composant SurveyForm
+
+---
+
+### AnswerView.vue
+- **Nom** : AnswerView
+- **Type** : Vue de page
+- **Props/Paramètres** :
+  - token (String) : transmis par le routeur
+- **Rôle** : Conteneur pour le composant AnswerForm
+
+---
+
+## Librairies tierces utilisées globalement
+
+- vue : Framework principal
+- vue-router : Navigation SPA
+- axios : Requêtes HTTP (API)
+- apexcharts/vue3-apexcharts (si utilisé dans d’autres fichiers) : Graphiques
+
+---
+
+## Fonctions et méthodes utilisées dans les composants
+
+### SurveyForm.vue
+- **fetchQuestions** (async)
+  - Rôle : Récupère la liste des questions du sondage via l’API
+  - Paramètres : aucun
+  - Retour : void (met à jour Questions)
+- **validateAnswers**
+  - Rôle : Vérifie que toutes les questions ont une réponse
+  - Paramètres : aucun
+  - Retour : boolean
+- **SurveySubmitted** (async)
+  - Rôle : Soumet les réponses du formulaire à l’API
+  - Paramètres : e (Event)
+  - Retour : void (affiche la modal, met à jour UrlToken)
+- **watch(UrlToken, cb)**
+  - Rôle : Génère l’URL de consultation dès qu’un token est disponible
+
+### AnswerForm.vue
+- **fetchUserAnswer** (async)
+  - Rôle : Récupère les réponses d’un utilisateur via l’API
+  - Paramètres : aucun
+  - Retour : void (met à jour PersonalAnswer)
+- **onMounted(fetchUserAnswer)**
+  - Rôle : Lance la récupération des réponses à l’affichage du composant
+
+---
+
+## Fonctions utilitaires (src/utilities)
+
+### utils.js
+- **setAccessToken(access_token: string): void**
+  - Stocke le token d’accès dans le localStorage
+- **getAccessToken(): string|null**
+  - Récupère le token d’accès du localStorage
+- **removeAccessToken(): void**
+  - Supprime le token d’accès du localStorage
+- **isAuthenticated(): Promise<boolean>**
+  - Vérifie si l’utilisateur est authentifié (requête /admin/auth via axios)
+
+### axios.js
+- **setGlobalLoadingSetter(fn: function): void**
+  - Définit la fonction globale pour activer/désactiver le loader
+- **instance (AxiosInstance)**
+  - Instance Axios personnalisée avec baseURL, intercepteurs pour loader et gestion du token
+
+---
+
+## Types des variables principales dans les composants et vues
+
+### SurveyForm.vue
+- **openModal** : Ref<boolean> — Affiche ou masque la modal de confirmation
+- **errorMessage** : Ref<string> — Message d’erreur affiché à l’utilisateur
+- **Questions** : Ref<Array<Object>> — Liste des questions du sondage
+- **answer** : Ref<Object> — Réponses de l’utilisateur, indexées par id de question
+- **UrlToken** : Ref<string|null> — Token d’accès généré après soumission
+- **accessUrl** : Ref<string|null> — URL d’accès générée pour consulter les réponses
+- **router** : Router — Instance du routeur Vue pour la navigation
+
+### AnswerForm.vue
+- **props.token** : string — Token d’accès unique transmis en prop
+- **PersonalAnswer** : Ref<Array<Object>> — Réponses de l’utilisateur
+- **errorMessage** : Ref<string> — Message d’erreur
+
+### SurveyView.vue
+- Aucun état local, contient uniquement le composant SurveyForm
+
+### AnswerView.vue
+- **props.token** : string — Token transmis par le routeur à AnswerForm
+
+### App.vue
+- Aucun état local, contient uniquement le routeur principal
+
+---
+
+## Contenus principaux des composants et vues
+
+### SurveyForm.vue
+- Formulaire de sondage dynamique
+- Affichage conditionnel de la modal de confirmation
+- Génération d’un lien d’accès aux réponses après soumission
+
+### AnswerForm.vue
+- Affichage des réponses utilisateur sous forme de liste
+- Affichage conditionnel selon le type de question (texte, radio, échelle)
+
+### SurveyView.vue
+- Conteneur principal pour le formulaire de sondage
+
+### AnswerView.vue
+- Conteneur principal pour l’affichage des réponses utilisateur
+
+### App.vue
+- Point d’entrée de l’application, gestion du routage
+
+---
+
+## Composants AdminComponents
+
+### Sidebar.vue
+- **Nom** : Sidebar
+- **Type** : Composant structurel (barre latérale admin)
+- **Props/Paramètres** : Aucun
+- **Variables** :
+  - errorMessage : Ref<string> — message d’erreur pour la déconnexion
+  - router : Router — instance du routeur
+- **Librairies tierces** :
+  - vue-router : RouterLink, useRouter, $route
+  - axios : requêtes HTTP (logout)
+  - @/utilities/utils.js : getAccessToken, removeAccessToken
+- **Méthodes** :
+  - handleLogout (async) : déconnexion admin, suppression token, redirection
+
+### Dashboard.vue
+- **Nom** : Dashboard
+- **Type** : Composant de page/statistiques
+- **Props/Paramètres** : Aucun
+- **Variables** :
+  - errorMessage : Ref<string>
+  - PieChartDataQuestion6/7/10 : Ref<Array<{value, count}>>
+  - RadarChartData : Ref<Array<{value, count}>>
+- **Librairies tierces** :
+  - vue : ref, computed, onMounted
+  - axios : requêtes API
+  - ChartCard : composant enfant
+  - @/utilities/utils.js : getAccessToken
+- **Méthodes** :
+  - fetchDataChart (async) : récupère et formate les données pour les graphiques
+
+### ChartCard.vue
+- **Nom** : ChartCard
+- **Type** : Composant fonctionnel (carte graphique)
+- **Props/Paramètres** :
+  - ChartTitle : String (obligatoire)
+  - ChartType : String (obligatoire)
+  - ChartOptions : Object (obligatoire)
+  - ChartSeries : Array (obligatoire)
+- **Librairies tierces** :
+  - vue3-apexcharts : <vue-apex-charts> pour les graphiques
+
+---
+
+## Vues administration
+
+### DashboardView.vue
+- **Nom** : DashboardView
+- **Type** : Vue de page
+- **Contenu** : Affiche le composant Dashboard
+
+### LoginView.vue
+- **Nom** : LoginView
+- **Type** : Vue de page (connexion admin)
+- **Variables** :
+  - errorMessage : Ref<string>
+  - email : Ref<string>
+  - password : Ref<string>
+  - router : Router
+- **Librairies tierces** :
+  - axios : requêtes HTTP
+  - vue : ref
+  - vue-router : useRouter
+  - @/utilities/utils.js : setAccessToken
+
+---
+
+Cette documentation est basée sur les commentaires et le code des fichiers du dossier frontend_vuejs.
