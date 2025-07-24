@@ -118,7 +118,9 @@ watch(UrlToken, (newToken) => {
  */
 const SurveySubmitted = async(e) => {
   e.preventDefault();
-  if (!validateAnswers) return;
+  if (!validateAnswers()) {
+    return
+  };
   try {
     isLoading.value = true; // Indique le début du chargement
     errorMessage.value = '';
@@ -314,6 +316,7 @@ onMounted(fetchQuestions);
                 :name="'answer.'+ Q.id"
                 :value='n'
                 v-model="answer[Q.id]"
+                required
               >
               <span></span>
             </div>
@@ -513,7 +516,7 @@ onMounted(fetchQuestions);
     height:0;
   }
 
-  /*.QuestionRadioOption input[type = 'radio'],*/
+  .QuestionRadioOption input[type = 'radio'],
   .QuestionRadioSelect input[type = 'radio'] {
     cursor: pointer;
     position: absolute;
