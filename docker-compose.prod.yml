@@ -1,0 +1,67 @@
+name: bigscreen-survey-prod
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: bigscreen_db_prod
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-backend_laravel}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secretpassword}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secretpassword}
+    volumes:
+      - db_prod_data:/var/lib/mysql
+    networks:
+      - bigscreen-net
+
+  backend:
+    build:
+      context: ./backend_laravel
+      dockerfile: Dockerfile
+      target: production
+    container_name: bigscreen_backend_prod
+    restart: always
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: "${APP_NAME:-BigscreenSurvey}"
+      APP_ENV: production
+      APP_KEY: "${APP_KEY:-}"
+      APP_DEBUG: "false"
+      APP_URL: "${APP_URL:-http://localhost}"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-backend_laravel}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-secretpassword}
+    depends_on:
+      - db
+    networks:
+      - bigscreen-net
+
+  frontend:
+    build:
+      context: ./frontend_vuejs
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_BASE_URL: "/api"
+    container_name: bigscreen_frontend_prod
+    restart: always
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - bigscreen-net
+
+volumes:
+  db_prod_data:
+
+networks:
+  bigscreen-net:
+    driver: bridge

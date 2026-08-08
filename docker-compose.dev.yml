@@ -1,0 +1,73 @@
+name: bigscreen-survey-dev
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: bigscreen_db_dev
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-backend_laravel}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_dev_data:/var/lib/mysql
+    networks:
+      - bigscreen-net
+
+  backend:
+    build:
+      context: ./backend_laravel
+      dockerfile: Dockerfile
+      target: development
+    container_name: bigscreen_backend_dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: "${APP_NAME:-BigscreenSurvey}"
+      APP_ENV: local
+      APP_KEY: "${APP_KEY:-}"
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8000"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-backend_laravel}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+    volumes:
+      - ./backend_laravel:/var/www/html
+      - /var/www/html/vendor
+    depends_on:
+      - db
+    networks:
+      - bigscreen-net
+
+  frontend:
+    build:
+      context: ./frontend_vuejs
+      dockerfile: Dockerfile
+      target: development
+    container_name: bigscreen_frontend_dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: "http://localhost:8000/api"
+    volumes:
+      - ./frontend_vuejs:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - bigscreen-net
+
+volumes:
+  db_dev_data:
+
+networks:
+  bigscreen-net:
+    driver: bridge
