@@ -3,7 +3,9 @@
 
 <template>
 <div class="DivLoader">
-  <div class="loader"></div>
+  <div class="loader-container">
+    <div class="loader"></div>
+  </div>
 </div>
 </template>
 
@@ -19,17 +21,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .loader {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top: 4px solid #00b8ff;
-  background-color: transparent;
-  box-shadow: 0px 0px 20px rgba(0, 184, 255, 0.3);
-  animation: spin 0.8s linear infinite;
+  border: 5px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #00b8ff;
+  border-right-color: #00b8ff;
+  box-sizing: border-box;
+  animation: spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  filter: drop-shadow(0 0 12px rgba(0, 184, 255, 0.8));
 }
 
 @keyframes spin {
