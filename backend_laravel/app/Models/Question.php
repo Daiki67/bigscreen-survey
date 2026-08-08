@@ -26,6 +26,7 @@ class Question extends Model
      */
     protected $fillable = [
         'title',    // string : titre de la question
+        'body',     // string : corps de la question
         'type',     // string : type de la question
         'options',  // array|null : options de réponse
     ];

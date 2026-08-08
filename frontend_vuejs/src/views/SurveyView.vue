@@ -9,14 +9,14 @@ import SurveyForm from '@/components/SurveyForm.vue';
 </template>
 
 <style scoped>
-
-.Surveybody{
+.Surveybody {
   width: 100%;
-  height: auto;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   padding: 40px 0px;
   background-color: #121212;
+  box-sizing: border-box;
 }
-
 </style>

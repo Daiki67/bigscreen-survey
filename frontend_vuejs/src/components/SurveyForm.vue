@@ -532,78 +532,72 @@ onMounted(fetchQuestions);
     height: 25px;
   }
 
-  .QuestionRadioOption span,
-  .QuestionRadioSelect span {
+  .QuestionRadioOption span {
     position: relative;
     padding-left: 35px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
     line-height: 25px;
     transition: background-color 0.3s;
   }
 
   .QuestionRadioSelect span {
-    margin-bottom: 20px;
+    position: relative;
+    padding-left: 0;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    margin-bottom: 0;
     cursor: pointer;
   }
 
-  .QuestionRadioOption span::before,
-  .QuestionRadioSelect span::before {
+  /* Cercle extérieur (Type A) */
+  .QuestionRadioOption span::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0;
-    width: 20px;
-    height: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
     border: 2px solid #00b8ff;
     border-radius: 50%;
+    box-sizing: border-box;
     transition: border-color 0.3s ease;
   }
+
+  /* Cercle extérieur (Type C - notation 1 à 5) */
   .QuestionRadioSelect span::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
     border: 2px solid #2c2c2c;
     background-color: #2c2c2c;
+    border-radius: 50%;
+    box-sizing: border-box;
   }
 
-  .QuestionRadioOption span::after,
-  .QuestionRadioSelect span::after {
+  /* Point bleu intérieur (Type A) - Calcul dynamique : (22px - 12px) / 2 = 5px */
+  .QuestionRadioOption span::after {
     content: '';
     position: absolute;
-    left: 6px;
-    top: 6px;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
     width: 12px;
     height: 12px;
     background-color: #00b8ff;
-    border-radius:50%;
-    transform: scale(0);
-    transition: transform 0.4s;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
   }
 
-  .QuestionRadioSelect span::after {
-    left: 0;
-    top: 0;
-    width: 23px;
-    height: 23px;
-    background-color: red;
-  }
-
-  .QuestionRadioOption input[type = 'radio']:checked + span::after,
-  .QuestionRadioSelect input[type = 'radio']:checked + span::after {
-    content: '';
-    position: absolute;
-    left: 6px;
-    top: 6px;
-    width: 12px;
-    height: 12px;
-    background-color: #00b8ff;
-    border-radius:50%;
-    transform: scale(1.05);
-    transition:transform 0.4s;
-  }
-
-  .QuestionRadioSelect input[type = 'radio']:checked + span::after {
-    left: 0;
-    top: 0;
-    width: 23px;
-    height: 23px;
+  /* Affichage du point bleu centré au clic (Type A) */
+  .QuestionRadioOption input[type = 'radio']:checked + span::after {
+    transform: translateY(-50%) scale(1);
   }
 
   .QuestionRadioGroupSelect {
@@ -688,7 +682,9 @@ onMounted(fetchQuestions);
   }
 
   .RadioCheckedDiv {
-    display: flex;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
   }
 
   .ischecked span::after {
@@ -696,12 +692,13 @@ onMounted(fetchQuestions);
     position: absolute;
     left: 0;
     top: 0;
-    width: 23px;
-    height: 23px;
+    width: 24px;
+    height: 24px;
     background-color: #00b8ff;
-    border-radius:50%;
-    transform: scale(1.05);
-    transition:transform 0.4s;
+    border-radius: 50%;
+    box-sizing: border-box;
+    transform: scale(1);
+    transition: transform 0.2s ease;
   }
 
   @media (min-width: 320px) and (max-width: 426px) {
