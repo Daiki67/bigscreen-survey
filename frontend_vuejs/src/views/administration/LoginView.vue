@@ -117,49 +117,49 @@ async function handlelogin(e) {
 }
 
 .LoginBlock {
-  width: 24%;
-  height: 55vh;
-  padding: 30px 30px;
-  border-radius: 8px;
+  width: 90%;
+  max-width: 440px;
+  min-height: 460px;
+  padding: 40px 30px;
+  border-radius: 12px;
   background-color: #2c2c2c;
   border: 3px solid #00b8ff;
   box-shadow: 0px 0px 25px 4px #00b8ff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  box-sizing: border-box;
+  z-index: 10;
 }
 
 .DivTitle {
-  /*border: 1px solid #fff;*/
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.9rem;
+  font-size: 2.2rem;
   color: #fff;
   font-family: 'Orbitron', sans-serif;
+  margin-bottom: 20px;
 }
 
 form {
   width: 100%;
-  /*border: 1px solid #fff;*/
-  height: 70%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  gap: 20px;
   align-items: center;
 }
 
-form input,
-form button {
-  width: 70%;
-  padding: 8px 10px;
+form input {
+  width: 100%;
+  padding: 14px 16px;
   border: 2px solid #00b8ff;
   background: transparent;
   color: #fff;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 form input:focus {
@@ -167,16 +167,22 @@ form input:focus {
 }
 
 form button {
-  width: 80%;
+  width: 100%;
+  padding: 14px 20px;
   background-color: #00b8ff;
+  color: #121212;
+  border: 2px solid #00b8ff;
+  border-radius: 6px;
+  font-size: 1.1rem;
   transition: all 0.2s;
   font-weight: bold;
   font-family: 'Orbitron', sans-serif;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 form button:hover {
-  cursor: pointer;
-  transform: scale(1.05);
+  transform: scale(1.03);
   color: #2c2c2c;
 }
 
