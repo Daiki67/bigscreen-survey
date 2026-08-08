@@ -20,7 +20,7 @@ export function setGlobalLoadingSetter(fn) {
 // Paramètres :
 //   - baseURL : string (URL de base de l'API)
 const instance = axios.create({
-  baseURL: 'http://localhost:8000/api', // récupère la base de l'Url
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api', // récupère la base de l'Url
 })
 
 // Intercepteur de requête : affiche le loader avant chaque requête
