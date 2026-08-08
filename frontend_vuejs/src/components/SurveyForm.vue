@@ -23,7 +23,7 @@
 import axiosjs from '@/utilities/axios.js'; // Type : AxiosInstance
 import axios from 'axios'; // Type : AxiosInstance
 // Import des fonctions de Vue pour la réactivité et les hooks
-import { onMounted, ref, watch } from 'vue'; // ref<T>, onMounted(fn), watch(source, cb)
+import { onMounted, ref, watch, computed } from 'vue'; // ref<T>, onMounted(fn), watch(source, cb), computed
 // Import du composable useRouter pour la navigation
 import { useRouter } from 'vue-router'; // Type : () => Router
 
@@ -106,6 +106,11 @@ watch(UrlToken, (newToken) => {
   }
 })
 
+const fullAccessUrl = computed(() => {
+  if (!accessUrl.value) return '';
+  return `${window.location.origin}${accessUrl.value}`;
+});
+
 /**
  * SurveySubmitted
  * Type : Fonction asynchrone
@@ -124,7 +129,7 @@ const SurveySubmitted = async(e) => {
   try {
     isLoading.value = true; // Indique le début du chargement
     errorMessage.value = '';
-    const response = await axios.post('http://localhost:8000/api/survey/store', {
+    const response = await axiosjs.post('/survey/store', {
       answer: answer.value
     });
     UrlToken.value = response.data.urlToken
@@ -365,7 +370,7 @@ onMounted(fetchQuestions);
              <br>
               Si vous désirez consulter vos réponse ultérieurement, voici votre lien unique :
           </p>
-          <button @click="openModal = false"><a :href="accessUrl">http://localhost:5173/{{ accessUrl }}</a></button>
+          <button @click="openModal = false"><a :href="accessUrl">{{ fullAccessUrl }}</a></button>
         </div>
       </div>
     </section>

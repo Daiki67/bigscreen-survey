@@ -45,7 +45,7 @@ class SurveyController extends Controller
         foreach ($questions as $question) {
             $rule = 'required';
             if($question->id === 1) {
-                $rule = '|email';
+                $rule = 'required|email';
             }
             $rules['answer.' .$question->id] = $rule;
         }
