@@ -1,0 +1,20 @@
+{
+  "name": "bigscreen-survey-root",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bigscreen Survey - Application de sondage VR (Vue 3 + Laravel + MySQL)",
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,magenta.bold\" -n \"BACKEND,FRONTEND\" \"cd backend_laravel && php artisan serve --host=0.0.0.0 --port=8000\" \"cd frontend_vuejs && npm run dev\"",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up --build -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    "dev:docker": "npm run docker:dev",
+    "prod:docker": "npm run docker:prod",
+    "docker:down": "docker compose -f docker-compose.prod.yml down && docker compose -f docker-compose.dev.yml down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
